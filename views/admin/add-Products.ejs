@@ -1,0 +1,95 @@
+<%- include('../partials/admin/header') %> <%-
+include('../partials/admin/sidepanel') %>
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Add Product</h4>
+
+          <form
+            class="forms-sample"
+            action="/admin/products/add-product"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <div class="form-group">
+              <label for="exampleInputName1">Product Name</label>
+              <input
+                type="text"
+                name="productName"
+                class="form-control"
+                id="exampleInputName1"
+                placeholder="Product Name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="exampleInputName1">Description</label>
+              <input
+                type="text"
+                name="description"
+                class="form-control"
+                id="exampleInputName1"
+                placeholder="Description"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Image</label>
+              <div class="input-group col-xs-12">
+                <input
+                  type="file"
+                  class="form-control"
+                  id="basic-default-name images"
+                  name="images"
+                  data-target-index="1"
+                  accept="image/*"
+                  multiple
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="exampleSelectGender">Category</label>
+              <select
+                class="form-control"
+                id="exampleSelectGender"
+                name="category"
+              >
+                <% if(category.length){ %> <% category.forEach((item)=>{ %>
+                <option value="<%= item._id %>"><%= item.name %></option>
+                <% }) %> <% }%>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail3">Quantity</label>
+              <input
+                type="number"
+                name="quantity"
+                class="form-control"
+                id="exampleInputEmail3"
+                placeholder="Quantity"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword4">Price</label>
+              <input
+                type="text"
+                name="price"
+                class="form-control"
+                id="exampleInputPassword4"
+                placeholder="Price"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary mr-2">Submit</button>
+            <button class="btn btn-light">Cancel</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/admin/footer') %>

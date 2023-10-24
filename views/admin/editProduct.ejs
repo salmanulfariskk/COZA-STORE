@@ -1,0 +1,127 @@
+<%- include('../partials/admin/header') %> <%-
+include('../partials/admin/sidepanel') %>
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Edit Product</h4>
+
+          <form
+            class="forms-sample"
+            action="/admin/products/edit-product"
+            method="post"
+          >
+            <input type="hidden" name="id" value="<%= product._id %>">
+            <div class="form-group">
+              <label for="exampleInputName1">Product Name</label>
+              <input
+                type="text"
+                name="productName"
+                class="form-control"
+                id="exampleInputName1"
+                placeholder="Product Name"
+                value="<%= product.productName %>"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="exampleInputName1">Description</label>
+              <input
+                type="text"
+                name="description"
+                class="form-control"
+                id="exampleInputName1"
+                placeholder="Description"
+                value="<%= product.description %>"
+                required
+              />
+            </div>
+            <div class="form-group" >
+              <label for="exampleSelectGender">Category</label>
+              <select
+                class="form-control"
+                id="exampleSelectGender"
+                name="category"
+              >
+                <option value="<%= product.category._id %>"><%= product.category.name %></option>
+                 <% categories.forEach(category => { if(product.category.name != category.name){%>
+                 <option value="<%= category._id %>"><%= category.name %></option>
+                 <% }}); %>
+
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail3">Quantity</label>
+              <input
+                type="number"
+                name="quantity"
+                class="form-control"
+                id="exampleInputEmail3"
+                placeholder="Quantity"
+                value="<%= product.quantity %>"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword4">Price</label>
+              <input
+                type="text"
+                name="price"
+                class="form-control"
+                id="exampleInputPassword4"
+                placeholder="Price"
+                value="<%= product.price %>"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary mr-2">Submit</button>
+            <a href="/admin/products" class="btn btn-light">Cancel</a>
+          </form>
+          <% if (product.images.length) { %>
+            <div class="card mt-3" style="background-color: #eeeeee;">
+              <div class="card-header">
+                  Preview Image
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <% product.images.forEach(img => { %>
+                    <div class="col-4">
+                      <figure>
+                        <img src="<%= img %>" alt="img" class="preview" id="preview-img" style="max-width: 250px; object-fit: contain;" />
+                        <form action="/admin/products/<%= product._id %>/img/delete?_method=DELETE" method="post" class="mt-3">
+                          <input type="hidden" name="image" value="<%= img %>">
+                          <div class="">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                          </div>
+                        </form>
+                      </figure>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+            </div>
+          <% } %>
+          <% if (product.images.length < 3) { %>
+            <div class="card mt-3" style="background-color: #eeeeee;">
+              <div class="card-header">
+                Upload Image
+              </div>
+              <div class="card-body">
+                <form action="/admin/products/<%= product._id %>/img/add?_method=PATCH" method="post" enctype="multipart/form-data" id="uploadImg">
+                  <div class="mb-3" id="appendError">
+                    <input type="file" accept="image/*" <%= product.images.length > 1 ? '' : 'multiple' %> name="images" class="form-control file-upload-info" placeholder="Upload Image" id="preview-input" />
+                  </div>
+                  <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/admin/footer') %>

@@ -1,0 +1,41 @@
+<%- include('../partials/admin/header') %> <%-
+include('../partials/admin/sidepanel') %>
+<!-- partial -->
+<div class="main-panel">
+  <div class="content-wrapper">
+    <a href="/admin/category" class="btn btn-primary mb-3">Back to category</a>
+    <div class="row">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Add Category</h4>
+            <form class="forms-sample" method="post" action="/admin/category/add-category">
+              <div class="form-group">
+                <label for="exampleInputName1">Category name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="exampleInputName1"
+                  name="categoryName"
+                  placeholder="Category name"
+                />
+                <div class="text-center mt-2" style="font-weight: bold;">
+                    <% if(typeof error !== "undefined") { %>
+                        <span class="text-danger"><%= error %></span>
+                    <% } else if(typeof success !== "undefined") { %>
+                        <span class="text-success"><%= success %></span>
+                    <% } %>
+                </div>
+                
+              </div>
+              <button type="submit" class="btn btn-primary mr-2">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- content-wrapper ends -->
+    </div>
+    <%- include('../partials/admin/footer') %>
+  </div>
+</div>

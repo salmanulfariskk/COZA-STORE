@@ -1,0 +1,34 @@
+<%- include('../partials/admin/header') %> <%-
+include('../partials/admin/sidepanel') %>
+<!-- partial -->
+<div class="main-panel">
+  <div class="content-wrapper">
+    <a href="/admin/category" class="btn btn-primary mb-3">Back to category</a>
+    <div class="row">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Edit Category</h4>
+            <form class="forms-sample" method="post" action="">
+              <div class="form-group">
+                <label for="exampleInputName1">Category name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="exampleInputName1"
+                  name="categoryName"
+                  value="<%=category.name%>"
+                />
+                
+              </div>
+              <input type="submit" class="btn btn-primary mr-2" value="Submit">
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- content-wrapper ends -->
+    </div>
+    <%- include('../partials/admin/footer') %>
+  </div>
+</div>

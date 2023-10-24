@@ -1,0 +1,61 @@
+<%- include('../partials/admin/header') %>
+<%- include('../partials/admin/sidepanel') %>
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Users</h4>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Images</th>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <% customers.forEach((item,i)=>{ %>
+
+                
+                <tbody>
+                  <tr>
+                    <td><%= i+1 %></td>
+                    <td class="py-1">
+                      <img src="../../admin/images/faces/face1.jpg" alt="image" />
+                    </td>
+                    <td><%= item.firstName %><%= item.lastName %></td>
+                    <td><%= item.phone %></td>
+                    <td> <%= item.email %> </td>
+                    <% if(item.blocked===true){ %>
+                    <td><p class="text-danger">Deactive</p></td>
+                    <td>
+                      <a href="/admin/users/unblock-theUser?id=<%= item._id %>" class="btn btn-success">Unblock</a>
+                    </td>
+                    <% } else if (item.blocked===false){ %>
+                    <td>
+                      <p class="text-success">Active</p>
+                    </td>
+                    <td>
+                      <a href="/admin/users/block-theUser?id=<%= item._id %>" class="btn btn-danger">Block</a>
+                    </td>
+                  
+                  </tr>
+                  <% } %>
+                  <% }) %>
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/admin/footer') %>
