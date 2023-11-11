@@ -33,6 +33,7 @@
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
+	
 <!--===============================================================================================-->
 </head>
 <body class="animsition">
@@ -42,36 +43,6 @@
 		<!-- Header desktop -->
 		<div class="container-menu-desktop">
 			<!-- Topbar -->
-			<div class="top-bar">
-				<div class="content-topbar flex-sb-m h-full container">
-					<div class="left-top-bar">
-						Free shipping for standard order over $100
-					</div>
-
-					<div class="right-top-bar flex-w h-full">
-						<a href="#" class="flex-c-m trans-04 p-lr-25">
-							Help & FAQs
-						</a>
-                   
-						<% if (isLoggedIn) { %>
-							<a href="/logout" class="flex-c-m trans-04 p-lr-25">
-							logout
-							</a>
-						<%}else{ %>
-							<a href="/login" class="flex-c-m trans-04 p-lr-25">
-							login
-							</a>
-						<% } %>
-						<a href="#" class="flex-c-m trans-04 p-lr-25">
-							EN
-						</a>
-
-						<a href="#" class="flex-c-m trans-04 p-lr-25">
-							USD
-						</a>
-					</div>
-				</div>
-			</div>
 
 			<div class="wrap-menu-desktop">
 				<nav class="limiter-menu-desktop container">
@@ -84,14 +55,14 @@
 					<!-- Menu desktop -->
 					<div class="menu-desktop">
 						<ul class="main-menu">
-							<li >
+							<!-- <li >
 								<a href="/">Home</a>
-								<!-- <ul class="sub-menu"> -->
-									<!-- <li><a href="index.html">Homepage 1</a></li> -->
-									<!-- <li><a href="home-02.html">Homepage 2</a></li>
-									<li><a href="home-03.html">Homepage 3</a></li> -->
-								<!-- </ul> -->
-							</li>
+								<ul class="sub-menu">
+									 <li><a href="index.html">Homepage 1</a></li>
+									 <li><a href="home-02.html">Homepage 2</a></li>
+									<li><a href="home-03.html">Homepage 3</a></li>
+								</ul>
+							</li> -->
 
 							<li>
 								<a href="/shop">Shop</a>
@@ -110,16 +81,23 @@
 					<!-- Icon header -->
 					<div class="wrap-icon-header flex-w flex-r-m">
 						<div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-modal-search">
-							<i class="zmdi zmdi-search"></i>
+							<i class="zmdi zmdi-search"></i>	
+						</div>
+						
+						<div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 ">
+							<a  style="color: #333!important" href="/shoppingCart"><i class="zmdi zmdi-shopping-cart"></i></a>
 						</div>
 
-						<div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti js-show-cart" data-notify="2">
-							<i class="zmdi zmdi-shopping-cart"></i>
-						</div>
-
-						<a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti" data-notify="0">
+						<a  href="" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11">
 							<i class="zmdi zmdi-favorite-outline"></i>
 						</a>
+						<% if(isLoggedIn){ %>
+						<a href="/profile" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11">
+							<i class="zmdi zmdi-account"></i>
+						</a>
+						<% }else{ %>
+						<a style="color: black; font-size: 16px;" href="/login" class="flex-c-m trans-04 p-lr-25">Login</a>
+						<% } %>
 					</div>
 				</nav>
 			</div>	

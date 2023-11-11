@@ -3,8 +3,10 @@ const Admin = require("../models/adminModel");
 const users = require("../models/userModel");
 const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
+const Order = require("../models/orderModel");
 const fs = require("fs")
-const path = require("path")
+const path = require("path");
+const User = require("../models/userModel");
 
 const adminLogin = async (req, res) => {
   res.render("admin/login");
@@ -88,29 +90,33 @@ const loadAddCategory = async (req, res) => {
 }
 
 const AddCategory = async (req, res) => {
-  try{
-    if(req.body.categoryName === ""){
-      return res.render('admin/add-category',{ error: "Please enter category name" });
-    }else{
+  try {
+    const categoryName = req.body.categoryName.trim(); // Remove leading and trailing whitespace
 
-      const check = await Category.findOne({name: req.body.categoryName})
-      if(check){
-        res.render('admin/add-category',{ error: "Category already exist" });
+    if (categoryName === "") {
+      return res.render('admin/add-category', { error: "Please enter a non-empty category name" });
+    } else {
+      // Use a case-insensitive query to check for existing categories
+      const check = await Category.findOne({ name: { $regex: new RegExp(`^${categoryName}$`, 'i') } });
+
+      if (check) {
+        res.render('admin/add-category', { error: "Category already exists" });
         console.log(check);
-      }else{
-        const category = await Category.create({name: req.body.categoryName})
-        if(category){
-          return res.render('admin/add-category',{ success: "Category added successfully" })
+      } else {
+        const category = await Category.create({ name: categoryName });
+        if (category) {
+          return res.render('admin/add-category', { success: "Category added successfully" });
         } else {
-          return res.render('admin/add-category',{ error: "Category has been failed" });
+          return res.render('admin/add-category', { error: "Category creation failed" });
         }
       }
-
     }
-  }catch (error) {
+  } catch (error) {
     console.log(error.message);
   }
 }
+
+
 
 const editCategory = async (req,res)=>{
   try {
@@ -245,6 +251,72 @@ const updateProductImages = async (req, res) => {
   }
 }
 
+//order
+const loadOrder = async (req, res) => {
+  const perPage = 8; // Number of orders per page
+  const page = req.query.page || 1; // Get the current page from query parameters (default to page 1)
+  const { customer, status } = req.query;
+  try {
+      let ordersQuery = Order.find().populate([{ path: 'products.product' }, { path: 'user' }]);
+      if (customer) {
+          ordersQuery = ordersQuery.where('user.username').regex(new RegExp(customer, 'i'));
+      }
+
+      if (status) {
+          ordersQuery = ordersQuery.where('status').equals(status);
+      }
+
+      const orders = await ordersQuery
+          .sort({ orderDate: -1 }) // Sort by orderDate in descending order
+          .skip((page - 1) * perPage) // Skip orders on previous pages
+          .limit(perPage); // Limit the number of orders per page
+
+      const totalOrders = await Order.countDocuments();
+      const totalPages = Math.ceil(totalOrders / perPage);
+      res.render("admin/order", {
+          activePage: "order",
+          orders,
+          totalPages,
+          currentPage: page,
+      });
+  } catch (error) {
+      console.log(error.message);
+  }
+};
+
+const updateActionOrder = async (req, res) => {
+  try {
+    const orderData = await Order.findById(req.query.orderId)
+    const userData = await User.findById(orderData.user)
+
+    await Order.updateOne({_id:req.query.orderId},{status:req.query.action})
+    res.redirect('/admin/orders')
+  }catch (error) {
+    console.log(error.message);
+  }
+}
+
+const updateOrderCancel = async (req, res) => {
+
+  try {
+
+      const foundOrder = await Order.findById(req.query.orderId);
+
+      for (let i = 0; i < foundOrder.products.length; i++) {
+          foundOrder.products[i].isCancelled = true
+      }
+
+      foundOrder.status = req.query.action
+
+      await foundOrder.save();
+
+      res.redirect("/admin/orders")
+  } catch (error) {
+      console.log(error.message);
+  }
+
+}
+
 
 module.exports = { 
   adminLogin, 
@@ -266,5 +338,8 @@ module.exports = {
   loadEditProduct,
   editProduct,
   destroyProductImage,
-  updateProductImages
+  updateProductImages,
+  loadOrder,
+  updateActionOrder,
+  updateOrderCancel
  }

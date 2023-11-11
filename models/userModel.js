@@ -27,23 +27,31 @@ const userSchema = new mongoose.Schema({
     },
     profile: {
         type: String,
-        default: ''
+        default: '',
     },
     // wishlist: [
     //     { type: mongoose.Types.ObjectId, ref: 'Product' }
     // ],
-    // cart: [
-    //     {
-    //         product: {
-    //             type: mongoose.Schema.Types.ObjectId,
-    //             ref: 'Product',
-    //         },
-    //         quantity: {
-    //             type: Number,
-    //             default: 1
-    //         },
-    //     },
-    // ],
+    cart: [
+        {
+            product: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Product',
+            },
+            quantity: {
+                type: Number,
+                default: 1
+            },
+            total: {
+                type: Number,
+                default: 0
+            }
+        },
+    ],
+    totalCartAmount: {
+        type: Number,
+        default: 0
+    },
     password: {
         required: true,
         type: String,

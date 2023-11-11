@@ -1,0 +1,130 @@
+<%- include('../partials/admin/header') %>
+<%-include('../partials/admin/sidepanel') %>
+
+<div class="layout-page">
+  <!-- Content wrapper -->
+  <div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <form action="/admin/orders" id="search">
+        <!-- Status filter dropdown -->
+        <select name="status" class="form-select">
+          <option value="">All Status</option>
+          <option value="Processing">Processing</option>
+          <option value="Shipped">Shipped</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+
+        <button type="submit" style="margin-top: 10px" class="btn btn-primary">
+          Apply Filters
+        </button>
+      </form>
+
+      <!-- Basic Bootstrap Table -->
+      <div class="card" style="margin-top: 20px">
+        <!-- <a
+          href="/admin/return-requests"
+          style="margin-left: 25px; margin-top: 20px"
+          >View Retuen Request</a
+        > -->
+        <h5 class="card-header" style="display: inline">Orders</h5>
+
+        <div class="table-responsive text-nowrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>
+                  Products <br />
+                  name & quantity
+                </th>
+                <th>Address</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Payment Option</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <% if (orders.length > 0) { for (let i = 0; i < orders.length;
+              i++) { %>
+              <tr>
+                <td>
+                  <%= orders[i].user?.firstName+" "+orders[i].user?.lastName %><br /><%= orders[i].user?.email
+                  %>
+                </td>
+                <td>
+                  <% for ( let j = 0; j < orders[i].products.length; j++ ) { %>
+                  <%= orders[i].products[j].product.productName%> : <%= orders[i].products[j].quantity %><br />
+                  <% } %>
+                </td>
+                <td>
+                  <%= orders[i].deliveryAddress.name %>,<br />
+                  <%= orders[i].deliveryAddress.mobile %>, <%=
+                  orders[i].deliveryAddress.pincode %>,<br />
+                  <%= orders[i].deliveryAddress.address %>,<br />
+                  <%= orders[i].deliveryAddress.city %>, <%=
+                  orders[i].deliveryAddress.district %>,<br />
+                  <%= orders[i].deliveryAddress.state %>, <%=
+                  orders[i].deliveryAddress.country %>
+                </td>
+                <td>$<%= orders[i].totalAmount %></td>
+                <td>
+                  <% if (orders[i].status === "Cancelled"){ %>
+                  <h6 class="text-danger">Canceled</h6>
+                  <% } else if (orders[i].status === "Delivered"){ %>
+                  <h6 class="text-success">Delivered</h6>
+                  <% } else { %>
+                  <div class="btn-group">
+                    <button
+                      type="button"
+                      class="btn btn-danger dropdown-toggle dropdown-toggle-split"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                    >
+                      <%= orders[i].status %>
+                    </button>
+                    <div class="dropdown-menu">
+                      <a
+                        class="dropdown-item"
+                        href="/admin/order/action-update?action=Processing&orderId=<%= orders[i]._id %>"
+                        >Processing</a
+                      >
+                      <a
+                        class="dropdown-item"
+                        href="/admin/order/action-update?action=Shipped&orderId=<%= orders[i]._id %>"
+                        >Shipped</a
+                      >
+                      <a
+                        class="dropdown-item"
+                        href="/admin/order/action-update?action=Delivered&orderId=<%= orders[i]._id %>"
+                        >Delivered</a
+                      >
+                      <a
+                        class="dropdown-item"
+                        href="/admin/order-cancel?action=Cancelled&orderId=<%= orders[i]._id %>"
+                        >Cancel order</a
+                      >
+                    </div>
+                  </div>
+                  <%}%>
+                </td>
+                <td><%= orders[i].paymentMethod %></td>
+              </tr>
+              <% } } else { %>
+              <tr>
+                <td colspan="6">Products Not Found</td>
+              </tr>
+              <% } %>
+              <!-- Add more rows as needed -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/admin/footer') %>

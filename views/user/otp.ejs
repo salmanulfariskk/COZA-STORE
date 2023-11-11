@@ -74,12 +74,7 @@
           The best offer <br />
           <span style="color: hsl(218, 81%, 75%)">for your business</span>
         </h1>
-        <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-          Temporibus, expedita iusto veniam atque, magni tempora mollitia
-          dolorum consequatur nulla, neque debitis eos reprehenderit quasi
-          ab ipsum nisi dolorem modi. Quos?
-        </p>
+ 
       </div>
 
       <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
@@ -95,6 +90,8 @@
                         <div class="card-body">
                             <form id="otp-form" action="/otp-valid" method="post">
                               <input type="hidden" name="userId" value="<%= userId %>">
+                               <input type="hidden" name="email" value="<%= email %>">
+  
                                 <div class="form-group">
                                     <label for="otp">Enter OTP:</label>
                                     <input type="text" class="form-control" id="otp" name="otp" required>
@@ -108,6 +105,23 @@
                                 </div>
                             </form>
                         </div>
+                        <form action="/resend-otp" method="post">
+                          <input type="hidden" name="_id" value="<%= userId %>">
+                          <input type="hidden" name="email" value="<%=email %>">
+                          <div id="resend-otp-container" style="display: none;">
+                            <p>Didn't receive the OTP?</p>
+                           <button id="resend-otp-button" type="submit" class="btn btn-primary">
+                                Resend OTP
+                            </button>
+                        </div>
+                        </form>
+                      
+                      <div id="countdown-timer">
+                        Resend OTP in: <span id="countdown">0:00</span>
+                    </div>
+                      <div class="row col-md-5 form-group p_star">
+                    
+                      </div>
                     </div>
                 </div>
             </div>
@@ -122,5 +136,65 @@
     <!-- Include Bootstrap JavaScript (Popper.js and Bootstrap JS) -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script>
+  //     function startCountdown() {
+  //   const timerElement = document.getElementById('timer');
+  //   const resendButton = document.getElementById('resend');
+  //   const resendContainer = document.getElementById('resendContainer');
+
+  //   let timeLeft;
+  //   const startTime = localStorage.getItem('countdownStart');
+
+  //   if (startTime) {
+  //     const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+  //     timeLeft = Math.max(60 - elapsedTime, 0);
+  //   } else {
+  //     timeLeft = 60;
+  //     localStorage.setItem('countdownStart', Date.now());
+  //   }
+
+  //   const countdownInterval = setInterval(function () {
+  //     timeLeft--;
+
+  //     if (timeLeft <= 0) {
+  //       clearInterval(countdownInterval);
+  //       timerElement.textContent = '0';
+  //       localStorage.removeItem('countdownStart');
+  //       // Hide the countdown timer and show the "Resend" button
+  //       timerElement.style.display = 'none';
+  //       resendContainer.style.display = 'block';
+  //     } else {
+  //       timerElement.textContent = timeLeft;
+  //     }
+  //   }, 1000);
+  // }
+
+  // window.onload = startCountdown;
+    // Function to format time in MM:SS
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${0}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const countdownElement = document.getElementById("countdown");
+        const countdownContainer = document.getElementById("countdown-timer");
+        const resendContainer = document.getElementById("resend-otp-container");
+
+        let remainingSeconds = 60;
+
+        const countdownInterval = setInterval(function () {
+            countdownElement.textContent = formatTime(remainingSeconds);
+            remainingSeconds--;
+
+            if (remainingSeconds < 0) {
+                clearInterval(countdownInterval);
+                countdownContainer.style.display = "none";
+                resendContainer.style.display = "block";
+            }
+        }, 1000);
+    });
+    </script>
   </body>
 </html>

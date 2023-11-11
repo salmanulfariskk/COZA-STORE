@@ -1,0 +1,95 @@
+<%- include('../partials/user/header') %>
+<!-- Content page -->
+<section class="bg0 p-t-75 p-b-120 mainSec">
+    <div class="container">
+      <main class="container mt-4">
+        <section class="profile">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              <% if (userProfile.profile) { %>
+              <img src="<%= userProfile.profile  %>" alt="User Profile Picture" class="img-fluid rounded-circle" style="height: 200px; width: 200px; margin-left: -53px;">
+              <div class="row mb-3" style="margin-top: 10px;">
+                <div class="col-sm-10">
+                  <div class="d-flex justify-content-center">
+                    <a href="/profile/deletePhoto" class="btn btn-danger profile-button">Remove profile</a>
+                  </div>
+                  <% } else { %>
+                  <img src="images/defaultProfile.jpg" alt="User Profile Picture" class="img-fluid rounded-circle profile-picture" style="height: 200px; width: 200px; margin-left: -53px;">
+                  <div class="row mb-3" style="margin-top: 10px;">
+                    <div class="col-sm-10">
+                      <% } %>
+                      <label class="col-form-label" for="profile-picture" style="margin-top: 20px;">Change Profile</label>
+                      <form action="/profile/editPhoto?_method=PATCH" method="post" enctype="multipart/form-data">
+                        <input type="file" accept="image/*" name="image" class="form-control file-upload-info" placeholder="Upload Image" id="preview-input" />
+                        <button type="submit" class="btn btn-primary profile-button" style="margin-top: 15px;">Update profile</button><br>
+                      </form>
+                      <% if(typeof error !== "undefined"){ %>
+                      <div style="margin-top: 8px;">
+                        <span style="color:#f00; font-weight: bold;"><%= error %></span>
+                      </div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-8" style="margin-top: 10px;">
+                  <h1 class="profile-name"><%= userProfile.firstName %> <%= userProfile.lastName %></h1>
+                  <p class="profile-email mt-2">Email: <%= userProfile.email %></p>
+                  <p class="profile-mobile mt-2">Mobile: <%= userProfile.phone %></p>
+                  <div style="margin-top: 8px;">
+                    <a href="/change-password">Change Password</a>
+                  </div>
+                  <!-- Add other user information here -->
+                  <div style="margin-top: 10px;">
+                    <a href="/edit-profile?id=<%= userProfile._id %>" class="btn btn-outline-primary profile-button" id="edit-profile-button">Edit Profile</a>
+                    <a href="/logout" class="btn btn-danger profile-button" id="logout-button">Logout</a> <!-- Logout button -->
+                  </div>
+                  <div style="margin-top: 10px;">
+                    <a href="/order" class="btn btn-dark profile-button" id="edit-profile-button">My Orders</a>
+                    <!-- <a href="/wallet" class="btn btn-info profile-button" id="edit-profile-button">My Wallet</a>
+                    <a href="/coupons" class="btn btn-secondary profile-button" id="edit-profile-button">Coupons</a> -->
+                  </div>
+                  <section class="bg-light p-4" style="margin-top: 20px;">
+                    <h2 class="mb-4">Addresses</h2>
+                    <div class="row">
+                      <!-- Add Address Button -->
+                      <div class="col-md-12 ">
+                        <a href="/add-address" class="btn btn-success" id="add-address-button">Add Address</a>
+                      </div>
+                <%
+                if (userAddress.length > 0) {
+                 for (let i = 0; i < userAddress.length; i++) {
+                %>
+                      <div class="col-md-6 mb-4 mt-4">
+                        <div class="card">
+                          <div class="card-body">
+                            <h5 class="card-title">Address <%= i+1 %></h5>
+                            <p class="card-text"><%= userAddress[i].name %>, <%= userAddress[i].district %>, <%= userAddress[i].state %>, <%= userAddress[i].country %></p>
+                            <a href="/editAddress?id=<%= userAddress[i]._id %>" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="/deleteAddress?id=<%= userAddress[i]._id %>" class="btn btn-danger btn-sm">Delete</a>
+                          </div>
+                        </div>
+                      </div>
+                <%
+                        }
+                    } else {
+                %>
+  
+                      <div style="margin-top: 20px;">
+                        <h4>You are not added address</h4>
+                      </div>
+  
+                      <% } %>
+  
+                      <!-- Add more addresses here... -->
+                    </div>
+                  </section>
+  
+                </div>
+              </div>
+        </section>
+  
+  
+      </main>
+    </div>
+  </section>
+  <%- include('../partials/user/footer') %>

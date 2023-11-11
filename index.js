@@ -33,9 +33,10 @@ app.use(
 
 app.use("/", userRoute);
 app.use("/admin", adminRoute)
-app.get("/salman",(req,res)=>{
-  res.render("user/shop", { isLoggedIn: true })
+app.get('/salman',(req,res)=>{
+  res.render('user/changePass',{isLoggedIn:true,userId:true});
 })
+
 
 Connection();
 

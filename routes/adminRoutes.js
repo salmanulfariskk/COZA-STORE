@@ -31,6 +31,13 @@ router.delete("/products/:id/img/delete",auth.adminLogin,adminControllers .destr
 router.patch("/products/:id/img/add",auth.adminLogin,ImageMiddleware.uploadProductImages, ImageMiddleware.resizeProductImages, adminControllers.updateProductImages)
 
 
+//orders
+router.get('/orders',auth.adminLogin,adminControllers.loadOrder)
+router.get('/order/action-update',auth.adminLogin,adminControllers.updateActionOrder)
+router.get('/order-cancel',auth.adminLogin,adminControllers.updateOrderCancel)
+
+
+
 // router.get("/", checkAuth, getDashboard);
 // router.route("/login").get(isLoggedIn, getLogin).post(loginAdmin);
 

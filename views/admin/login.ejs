@@ -66,21 +66,18 @@
           background-color: hsla(0, 0%, 100%, 0.9) !important;
           backdrop-filter: saturate(200%) blur(25px);
         }
+
+        .inp-width {
+          width: 300px;
+          @media screen and (max-width: 768px) {
+            width: auto ;
+          }
+        }
       </style>
 
-      <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
-        <div class="row gx-lg-5 align-items-center mb-5">
-          <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
-            <h1
-              class="my-5 display-5 fw-bold ls-tight"
-              style="color: hsl(218, 81%, 95%)"
-            >
-            <img src="/images/icons/logo-02.png" style="width: 200px; height: 50px;"><br />
-              <span style="color: hsl(218, 81%, 75%)">Admin Login</span>
-            </h1>
-          </div>
-
-          <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
+      <div class="container-fluid px-4 py-5 px-md-5 d-flex h-100 justify-content-center align-items-center">
+        <div class="row">
+          <div class="col-12 d-flex  mb-5 position-relative justify-content-center">
             <div
               id="radius-shape-1"
               class="position-absolute rounded-circle shadow-5-strong"
@@ -91,12 +88,13 @@
             ></div>
 
             <div class="card bg-glass">
-              <div class="card-body px-4 py-5 px-md-5">
+              <div class="card-body px-3 py-4 ">
+                <p class="h3 text-center p-0 pb-2">Admin Login</p>
                 <form action="/admin/login" method="post">
                   <!-- 2 column grid layout with text inputs for the first and last names -->
 
                   <!-- Email input -->
-                  <div class="form-outline mb-4">
+                  <div class="form-outline mb-4 inp-width">
                     <input
                       type="email"
                       id="form3Example3"

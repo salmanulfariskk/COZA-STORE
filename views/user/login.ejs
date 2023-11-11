@@ -65,23 +65,17 @@
         .bg-glass {
           background-color: hsla(0, 0%, 100%, 0.9) !important;
           backdrop-filter: saturate(200%) blur(25px);
+          width: 400px;
+          @media screen and (max-width:478px) {
+            width: auto;
+          }
         }
       </style>
       <div
-        class="container px-4 py-5 px-md-5 text-center text-lg-start my-5 d-flex align-items-center"
+        class="container-fluid px-4 py-5 px-md-5 d-flex h-100 justify-content-center align-items-center"
       >
-        <div class="row gx-lg-5 align-items-center mb-5">
-          <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
-            <h1
-              class="my-5 display-5 fw-bold ls-tight"
-              style="color: hsl(218, 81%, 95%)"
-            >
-              The best offer <br />
-              <span style="color: hsl(218, 81%, 75%)">for your business</span>
-            </h1>
-          </div>
-
-          <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
+        <div class="row ">
+          <div class="col-12 d-flex  mb-5 position-relative justify-content-center ">
             <div
               id="radius-shape-1"
               class="position-absolute rounded-circle shadow-5-strong"
@@ -94,6 +88,7 @@
             <div class="card bg-glass">
               <div class="card-body px-4 py-5">
                 <form id="loginForm" action="/login" method="post">
+                  <p class="h3 text-center p-0 pb-2">Login</p>
                   <div class="mb-3">
                     <label for="form3Example3" class="form-label"
                       >Email address</label
@@ -128,7 +123,9 @@
                       Login
                     </button>
                   </div>
-
+                  <div class="text-center" style="margin-bottom: 8px;">
+                    <a href="/forgot-password">Forgot Password ?</a>
+                  </div>
                   <p class="text-center">
                     Don't have an account? <a href="/register">Signup</a>
                   </p>

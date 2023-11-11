@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema({
     quantity:{
         type:Number,
         required:true
-    },
+    },  
     price:{
          type:Number,
          required:true
@@ -37,5 +37,5 @@ const productSchema = new mongoose.Schema({
 
    
 })
-const Product = mongoose.model("product", productSchema);
+const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

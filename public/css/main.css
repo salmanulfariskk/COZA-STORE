@@ -2335,7 +2335,11 @@ input.num-product::-webkit-inner-spin-button {
   line-height: 1.333333;
   text-transform: uppercase;
 }
-
+.modal-dialog-centered {
+  display: flex;
+  align-items: center;
+  min-height: calc(100% - 1.75rem * 2);
+}
 
 /*//////////////////////////////////////////////////////////////////
 [ L-Text >= 26 ]*/

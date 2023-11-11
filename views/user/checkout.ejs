@@ -1,0 +1,226 @@
+    <%- include('../partials/user/header') %>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+	<div class="bg0 p-t-75 p-b-85">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+					<div class="m-l-25 m-r--38 m-lr-0-xl">
+						<div class="wrap-table-shopping-cart">
+							<table class="table-shopping-cart">
+								<tr class="table_head">
+
+									<th class="column-1">Product</th>
+									<th class="column-2"></th>
+									<th class="column-3">Price</th>
+									<th class="column-3">Quantity</th>
+									<th class="column-3">Total</th>
+								</tr>
+								<% if(userData.cart.length> 0) { %>
+									<% for ( let i=0; i<userData.cart.length; i++ ) { %>
+										<tr class="table_row">
+											<td class="column-1">
+													<div class="how-itemcart1">
+														<img src="<%= userData.cart[i].product.images[0] %>" alt="IMG">
+													</div>
+											</td>
+											<td class="column-2">
+												<%= userData.cart[i].product.name %>
+											</td>
+											<td class="column-3">₹<%= userData.cart[i].product.price %>
+											</td>
+											<td class="column-3">
+												<%= userData.cart[i].quantity %>
+											</td>
+											<td class="column-3">
+												₹<span>
+													<%= userData.cart[i].total %>
+												</span>
+											</td>
+										</tr>
+									<% } %>
+								<% } %>
+							</table>
+						</div>
+					</div>
+					
+					<div class="m-l-25 m-r--38 m-lr-0-xl" style="margin-top: 15px;">
+						<div class="wrap-table-shopping-cart">
+							<% if ( selectAddress ) { %>
+							<table class="table-shopping-cart">
+								<tr class="table_head">
+
+									<th class="column-1">Selected Address</th>
+
+								</tr>
+								
+								<tr class="table_row">
+
+									<td class="column-1"><a href="/edit-address-checkout?id=<%= selectAddress._id %>" type="button" class="btn btn-primary">Edit</a>
+									</td>
+									<td><%= selectAddress.name %> , <%= selectAddress.mobile %> , <%= selectAddress.city %> , <%= selectAddress.district %> , <%= selectAddress.state %> , <%= selectAddress.country %></td>
+
+								</tr>
+
+							</table>
+							<% } %>
+						</div>
+						<!-- Button to trigger the modal -->
+						<button style="margin-top: 15px;" type="button" class="btn btn-primary " data-bs-toggle="modal"
+							data-bs-target="#addressModal">
+							Select Address
+						</button>
+
+						<!-- Address Selection Modal -->
+						<div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" style="z-index: 20000;"
+							aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="addressModalLabel">Select Address</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal"
+											aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<!-- Your address selection form or content goes here -->
+										<!-- For example, list of user addresses with radio buttons -->
+										<div class="col-md-12 mb-4 mt-4">
+											<div class="card">
+												<% for ( let i=0; i<allAddress.length; i++ ) { %>
+											
+												<div class="card-body">
+													<h5 class="card-title">Address <%= i+1 %></h5>
+													<p class="card-text"><%= allAddress[i].name %> , <%= allAddress[i].country %> , <%= allAddress[i].state %> , <%= allAddress[i].district %> , <%= allAddress[i].mobile %></p>
+													<a href="/edit-address-checkout?id=<%= allAddress[i]._id %>" class="btn btn-primary btn-sm">Edit</a>
+													<a href="/select-address?id=<%= allAddress[i]._id %>" class="btn btn-primary btn-sm">Select</a>
+													
+												</div>
+												<style>
+													.card-body {
+														border-bottom:1px solid#d7d7d7;
+													}
+												</style>
+												<% } %>
+											</div>
+										</div>
+
+										<!-- Add more address options as needed -->
+									</div>
+									<div class="modal-footer">
+										<!-- Button to close the modal without selecting an address -->
+										<button type="button" class="btn btn-secondary"
+											data-bs-dismiss="modal">Close</button>
+
+										<!-- Button to confirm and select an address -->
+										<a href="/add-address-checkout" style="color: #fff;" type="button" class="btn btn-primary">Add Address</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
+					<div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+						<h4 class="mtext-109 cl2 p-b-30">
+							Your Order
+						</h4>
+
+						<div class="flex-w flex-t p-t-27">
+							<div class="size-208">
+								<span class="mtext-101 cl2">
+									Items:
+								</span>
+							</div>
+
+							<div class="size-209 p-t-1">
+								<span class="mtext-110 cl2">
+									<%= userData.cart.length %>
+								</span>
+							</div>
+						</div>
+
+						<div class="flex-w flex-t p-t-27 p-b-33">
+							<div class="size-208">
+								<span class="mtext-101 cl2">
+									Total:
+								</span>
+							</div>
+
+							<div class="size-209 p-t-1 h3 text-dark">
+								₹
+								<% if (discount===0) { %>
+									<span>
+										<%= userData.totalCartAmount %>
+									</span>
+								<% } else { %>
+									<%= userData.totalCartAmount - discount %>
+								<% } %>
+
+							</div>
+						</div>
+						<% if (errorMessage) { %>
+							<div class="alert alert-danger">
+								<%= errorMessage %>
+							</div>
+						<% } %>
+						<form action="/order-product" method="post" id="order">
+							<div class="mb-3 form-check p-t-27">
+								<span class="mtext-101 cl2">Select Payment Option</span>
+								<input type="checkbox" class="form-check-input" style="margin-top: 15px;"
+									id="cashOnDelivery" name="paymentOptions" value="Cash on delivery">
+								<label class="form-check-label" for="savePaymentInfo" style="margin-top: 12px;">Cash on delivery</label>
+							</div>
+							<input type="hidden" name="discount" value="<%= discount %>">
+							<input type="hidden" name="currentCoupon" value="<%= currentCoupon %>">
+							<input type="hidden" name="totalAmount" value="<%= userData.totalCartAmount - discount %>">
+	
+							<button type="submit" id="placeOrderBtn" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
+								Order product
+							</button>
+
+						
+						</form>
+
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	<script>
+  const orderButton = document.getElementById("order");
+
+  document.addEventListener('DOMContentLoaded', function () {
+  const placeOrderButton = document.getElementById('placeOrderBtn');
+
+  placeOrderButton.addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent the default form submission behavior
+
+    console.log('Button clicked'); // Add this for debugging
+
+    Swal.fire({
+      title: 'Confirm Order',
+      text: 'Are you sure you want to place this order?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',   
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log('Order confirmed'); // Add this for debugging
+
+        // If confirmed, submit the form
+        const form = placeOrderButton.closest('form');
+        if (form) {
+          form.submit();
+        }
+      }
+    });
+  });
+});
+
+
+  
+	</script>
+	
+    <%- include('../partials/user/footer') %>
