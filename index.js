@@ -34,7 +34,7 @@ app.use(
 app.use("/", userRoute);
 app.use("/admin", adminRoute)
 app.get('/salman',(req,res)=>{
-  res.render('user/changePass',{isLoggedIn:true,userId:true});
+  res.render('user/orderSuccess');
 })
 
 

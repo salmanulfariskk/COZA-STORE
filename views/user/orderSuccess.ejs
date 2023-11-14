@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success</title>
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- FontAwesome CSS CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .order-summary {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .thank-you-message {
+            text-align: center;
+            font-size: 24px;
+            color: #28a745;
+        }
+
+        .order-details {
+            margin-top: 20px;
+        }
+
+        .order-details h4 {
+            color: #007bff;
+        }
+
+        .tick-mark {
+            color: #28a745;
+            font-size: 36px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="order-summary">
+            <div class="thank-you-message">
+                <p><i class="fas fa-check-circle tick-mark"></i> Thank you for your order!</p>
+                <p>Your order has been successfully placed.</p>
+            </div>
+
+            <div class="order-details">
+                <h4>Order Details:</h4>
+                <p><strong>Order Number:</strong> <%= randomSixDigitNumber %></p>
+                <p><strong>Total Amount:</strong> <%= orderData.totalAmount %></p>
+                <p><strong>Payment Method:</strong> <%= orderData.paymentMethod %></p>
+                <p><strong>Shipping Address:</strong> <%= orderData.deliveryAddress.name %>,<%= orderData.deliveryAddress.mobile %>,<%= orderData.deliveryAddress.country %>,<%= orderData.deliveryAddress.state %>,<%= orderData.deliveryAddress.district %>,<%= orderData.deliveryAddress.city %>,<%= orderData.deliveryAddress.pincode %>,<%= orderData.deliveryAddress.address %></p>
+            </div>
+
+            <div class="mt-4">
+                <a href="/order" class="btn btn-primary">My Orders</a>
+                <a href="/shop" class="btn btn-outline-secondary">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- FontAwesome JS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</body>
+
+</html>

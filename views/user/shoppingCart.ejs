@@ -147,29 +147,48 @@
 <!-- cart -->
 <script>
     function updateCartItem(cartItemId, incOrDec) {
-      const data = {
-        type: incOrDec
-      };
-      $.ajax({
-        url: '/update-cart/' + cartItemId,
-        type: 'POST',
-        data: JSON.stringify(data),
-        contentType: 'application/json',
-        success: function(response) {
-          console.log(response.message);
-          if (response.message !== "Stock limit exeeded") {
-            $('#stockError_' + cartItemId).text("");
-            $('#totalPrice_' + cartItemId).text(response.totalPrice);
-            $('#grandTotalPrice').text(response.grandTotal);
-            $('#quantityElement_' + cartItemId).val(response.quantity);
-          } else {
-            $('#stockError_' + cartItemId).text(response.message);
-          }
-        },
-        error: function(xhr, status, error) {
-          console.log(status);
+        const data = {
+            type: incOrDec
+        };
+
+        // Check if the action is decrement and the quantity is already 1
+        if (incOrDec === 'decrement' && parseInt($('#quantityElement_' + cartItemId).val()) === 1) {
+            // Show a confirmation dialog to the user
+            const confirmed = window.confirm("Decreasing the quantity to 1 will remove the item from your cart. Are you sure?");
+            
+            // If the user confirmed, proceed with the AJAX call
+            if (confirmed) {
+                performAjaxUpdate(cartItemId, data); //put the del route here
+            }
+        } else {
+            // If the action is not decrement or the quantity is not 1, proceed with the AJAX call
+            performAjaxUpdate(cartItemId, data);
         }
-      });
+    }
+
+    function performAjaxUpdate(cartItemId, data) {
+        $.ajax({
+            url: '/update-cart/' + cartItemId,
+            type: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function(response) {
+                console.log(response.message);
+                if (response.message !== "Stock limit exceeded") {
+                    $('#stockError_' + cartItemId).text("");
+                    $('#totalPrice_' + cartItemId).text(response.totalPrice);
+                    $('#grandTotalPrice').text(response.grandTotal);
+                    $('#quantityElement_' + cartItemId).val(response.quantity);
+                } else {
+                    $('#stockError_' + cartItemId).text(response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log(status);
+            }
+        });
     }
 </script>
+
+
 <%- include('../partials/user/footer') %>

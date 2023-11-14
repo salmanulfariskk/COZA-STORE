@@ -909,7 +909,7 @@ const orderProduct = async (req, res) => {
       // }
 
       await userData.save();
-      res.redirect("/order");
+      res.redirect("/orderSuccess");
     } else {
       const errorMessage = "Please select any payment option";
       res.redirect(`/checkout?error=${encodeURIComponent(errorMessage)}`);
@@ -1029,6 +1029,16 @@ const cancelOrder = async (req, res) => {
     console.log(error);
   }
 };
+const loadOrderSuccess = async (req, res) => {
+  try {
+   const orderData = await Order.findOne({user:req.session.user})
+   const randomSixDigitNumber = Math.floor(100000 + Math.random() * 900000);
+   res.render('user/orderSuccess',{orderData,randomSixDigitNumber})
+
+  }catch (error){
+    console.log(error.message);
+  }
+}
 
 
 const resendOTP = async (req, res) => {
@@ -1226,5 +1236,6 @@ module.exports = {
   loadOTPForgetPass,
   loadOTPForgetPassPage,
   verifyOTPForgetPassPage,
-  changePassFor
+  changePassFor,
+  loadOrderSuccess
 };
