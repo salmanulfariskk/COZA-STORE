@@ -350,14 +350,12 @@ const addToCart = async (req, res) => {
 };
 
 const updateCart = async (req, res) => {
-  console.log("sdfjasd");
   try {
     const currentUser = await User.findById(req.session.user);
-    console.log(currentUser, req.params.id);
+    
     const cartItem = currentUser.cart.find((item) =>
       item.product.equals(new mongoose.Types.ObjectId(req.params.id))
     );
-    console.log(cartItem);
     if (cartItem) {
       const product = await Product.findById(cartItem.product);
 
