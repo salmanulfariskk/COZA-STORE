@@ -7,6 +7,7 @@ const Product = require("../models/productModel");
 const Address = require("../models/addressModel");
 const Order = require("../models/orderModel");
 const Category = require('../models/categoryModel')
+const { ObjectId } = require('mongodb');
 
 let salt;
 
@@ -316,7 +317,9 @@ const loadShoppingCart = async (req, res) => {
       userData,
     });
   } catch (error) {
-    console.log(error.message);
+    console.log("here");
+    console.log(error);
+    console.log("here");
   }
 };
 
@@ -409,22 +412,28 @@ const updateCart = async (req, res) => {
 };
 const deleteItemFromCart = async (req, res) => {
   try {
+    
     const userData = await User.findById(req.session.user);
-
+    
     const cartId = req.query.cartId;
-
-    const itemIndex = userData.cart.findIndex(
-      (item) => String(item._id) === cartId
+    
+    
+    let itemIndex = userData.cart.findIndex(
+      (item) => item._id.equals(new ObjectId(cartId))
     );
+    // Check if the item was found in the cart
+    if (itemIndex !== -1) {
+      userData.totalCartAmount -= userData.cart[itemIndex].total;
+      userData.cart.splice(itemIndex, 1);
+      await userData.save();
+    }
 
-    userData.totalCartAmount -= userData.cart[itemIndex].total;
-    userData.cart.splice(itemIndex, 1);
-    await userData.save();
     return res.redirect("/shoppingCart");
   } catch (error) {
     console.log(error.message);
   }
 };
+
 
 //user profile
 const loadProfile = async (req, res) => {
@@ -909,7 +918,7 @@ const orderProduct = async (req, res) => {
       // }
 
       await userData.save();
-      res.redirect("/orderSuccess");
+      res.redirect(`/orderSuccess?orderId=${order._id}`);
     } else {
       const errorMessage = "Please select any payment option";
       res.redirect(`/checkout?error=${encodeURIComponent(errorMessage)}`);
@@ -1031,7 +1040,8 @@ const cancelOrder = async (req, res) => {
 };
 const loadOrderSuccess = async (req, res) => {
   try {
-   const orderData = await Order.findOne({user:req.session.user})
+    console.log(req.query.orderId);
+   const orderData = await Order.findById(req.query.orderId)
    const randomSixDigitNumber = Math.floor(100000 + Math.random() * 900000);
    res.render('user/orderSuccess',{orderData,randomSixDigitNumber})
 

@@ -43,13 +43,13 @@
                                 <td class="column-3">$ <%= userData.cart[i].product.price %></td>
                                 <td class="column-4">
                                     <div class="wrap-num-product flex-w m-l-auto m-r-0">
-                                        <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" onclick="updateCartItem('<%= userData.cart[i].product._id %>', 'decrement')">
+                                        <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" onclick="updateCartItem('<%= userData.cart[i].product._id %>', 'decrement','<%= userData.cart[i]._id %>')">
                                           <i class="fs-16 zmdi zmdi-minus"></i>
                                         </div>
                     
                                         <input class="mtext-104 cl3 txt-center num-product" id="quantityElement_<%= userData.cart[i].product._id %>" type="number" name="num-product1" value="<%= userData.cart[i].quantity %>" >
                     
-                                        <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" onclick="updateCartItem('<%= userData.cart[i].product._id %>', 'increment')">
+                                        <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" onclick="updateCartItem('<%= userData.cart[i].product._id %>', 'increment','<%= userData.cart[i]._id %>')">
                                           <i class="fs-16 zmdi zmdi-plus"></i>
                                         </div> 
                                     </div>
@@ -146,19 +146,24 @@
 </script>
 <!-- cart -->
 <script>
-    function updateCartItem(cartItemId, incOrDec) {
+    function updateCartItem(cartItemId, incOrDec,Cart) {
+        
         const data = {
             type: incOrDec
         };
-
         // Check if the action is decrement and the quantity is already 1
         if (incOrDec === 'decrement' && parseInt($('#quantityElement_' + cartItemId).val()) === 1) {
             // Show a confirmation dialog to the user
-            const confirmed = window.confirm("Decreasing the quantity to 1 will remove the item from your cart. Are you sure?");
+            const confirmed = window.confirm("Do you want delete this item from cart ?");
             
             // If the user confirmed, proceed with the AJAX call
             if (confirmed) {
-                performAjaxUpdate(cartItemId, data); //put the del route here
+                try {
+                   window.location.href = `/deleteItem?cartId=${Cart}`;
+                } catch (error) {
+                console.error('Error during navigation:', error);
+                }
+               
             }
         } else {
             // If the action is not decrement or the quantity is not 1, proceed with the AJAX call
