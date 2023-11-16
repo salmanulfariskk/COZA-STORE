@@ -3,100 +3,119 @@
 <section class="bg0 p-t-100 p-b-120 mainSec">
   <div class="container">
     <% if (!orders.length) { %>
-    No orders found.
+      No orders found.
     <% } else { %>
-    <% orders.forEach((order)=> { %>
-    <div class="d-flex flex-column flex-md-row border p-3 mb-3">
-      <div class="col-md-3 col-12 d-flex justify-content-center mb-5">
-        <a href="/productDetail?id=<%= order.orderedProducts[0]._id %>">
-          <img src="<%= order.orderedProducts[0].images[0] %>" alt="Image" height="180px" width="180px" class="img-fluid">
-        </a>
-      </div>
-      <div class="col-md-6">
-        <span class="d-block text-primary h6 text-uppercase">
-          <%= order.orderedProducts[0].name %>
-        </span>
-        <p>
-          Price: ₹<%= order.products.total %>,
-          Quantity: <%= order.products.quantity %>,<br>
-          Payment Method: <%= order.paymentMethod %><br>
-          Delivery Address: <%= order.deliveryAddress.city %>,
-          <%= order.deliveryAddress.pincode %>,
-          <%= order.deliveryAddress.district %>,
-          <%= order.deliveryAddress.state %>,
-          <%= order.deliveryAddress.country %>
-        </p>
-        <div class="d-flex">
-          <div>
-            <p class="text-black">
-              Order Confirmed: <%= order.orderDate.toLocaleDateString() %>
+      <% orders.forEach((order) => { %>
+        <div class="d-flex flex-column flex-md-row border p-3 mb-3">
+          <div class="col-md-3 col-12 d-flex justify-content-center mb-5">
+            <a href="/productDetail?id=<%= order.orderedProducts[0]._id %>">
+              <img src="<%= order.orderedProducts[0].images[0] %>" alt="Image" height="180px" width="180px" class="img-fluid">
+            </a>
+          </div>
+          <div class="col-md-6">
+            <span class="d-block text-primary h6 text-uppercase">
+              <%= order.orderedProducts[0].name %>
+            </span>
+            <p>
+              Price: ₹<%= order.products.total %>,
+              Quantity: <%= order.products.quantity %>,<br>
+              Payment Method: <%= order.paymentMethod %><br>
+              Delivery Address: <%= order.deliveryAddress.city %>,
+              <%= order.deliveryAddress.pincode %>,
+              <%= order.deliveryAddress.district %>,
+              <%= order.deliveryAddress.state %>,
+              <%= order.deliveryAddress.country %>
             </p>
-            <p class="text-black">
-              Delivery: <%= order.deliveryDate.toLocaleDateString() %><br>
-              <% if (!order.products.isCancelled) { %>
-                <strong>Status: 
-                <% if (order.products.returnRequested==="Completed") { %>
-                  <span>Product returned</span>
-                <% } else { %>
-                  <% if (order.status === "Delivered") { %>
-                    <span class="text-success"><%= order.status %></span>
+            <div class="d-flex">
+              <div>
+                <p class="text-black">
+                  Order Confirmed: <%= order.orderDate.toLocaleDateString() %>
+                </p>
+                <p class="text-black">
+                  Delivery: <%= order.deliveryDate.toLocaleDateString() %><br>
+                  <% if (!order.products.isCancelled) { %>
+                    <strong>Status:
+                      <% if (order.products.returnRequested === "Completed") { %>
+                        <span>Product returned</span>
+                      <% } else { %>
+                        <% if (order.status === "Delivered") { %>
+                          <span class="text-success"><%= order.status %></span>
+                        <% } else { %>
+                          <span><%= order.status %></span>
+                        <% } %>
+                      <% } %>
+                    </strong>
+                  <% } %>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mt-2">
+            <% order.orderedProducts.forEach((product) => { %>
+              <div class="row">
+                <div class="col-md-12">
+                  <% if (order.products.isCancelled) { %>
+                    <p class="text-danger ml-3">
+                      Order Cancelled
                     </p>
                   <% } else { %>
-                  <span><%= order.status %></span>
+                    <% if (order.status === 'Processing' || order.status === 'Shipped' || order.status === 'Approved') { %>
+                      <% if (order.products.cancelRequested === 'Nil') { %>
+                      <p class="ml-3">
+                        <a href="/cancel-order?order=<%= order._id %>&product=<%= product._id %>&category=<%= product.category %>&quantity=<%= order.products.quantity %>&totalPrice=<%= order.products.total %>" class="btn btn-sm btn-outline-primary mb-3">
+                          Cancel
+                        </a>
+                      </p>
+                      <% } else { %>
+                        <% if (order.products.cancelRequested === "Pending") { %>
+                          <p class="ml-4">Cancel Request:
+                            <span class="text-info">Pending</span>
+                          </p>
+                          <% } else if (order.products.cancelRequested === "Rejected") { %>
+                          <p class="ml-4">Cancel
+                            Request: <span class="text-danger">Rejected</span>
+                          </p>
+                          <% } else if (order.products.cancelRequested === "Approved") { %>
+                          <p class="ml-4">Cancel
+                            Request: <span class="text-success">Approved</span>
+                          </p>
+                          <% } else if (order.products.cancelRequested === "Completed") { %>
+                          <span class="text-info ml-4">Order Cancelled</span>
+                          </p>
+                          <% } %>
+                      <% } %>
+                    <% } else if (order.status === 'Delivered' || order.status === 'Rejected' || order.status === 'Completed') { %>
+                      <span class="text-success"><%= order.status %></span>
+                    <% } %>
                   <% } %>
-                <% } %>
-              </strong>
-              <% } %>
-            </p>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% }) %>
+  
+      <!-- Pagination controls -->
+      <div class="pagination">
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+        <% } %>
+      </div>
+  
+      <div class="row" style="margin-top: 15px;">
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-md-6">
+              <p>
+                <a href="/shop" class="btn btn-outline-primary btn-sm btn-block">Continue Shopping</a>
+              </p>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-md-3 mt-2">
-        <% if (order.products.isCancelled) { %>
-        <p class="text-danger ml-3">
-          Order Cancelled
-        </p>
-        <% } else { %>
-        <% if (order.status==='Processing' ) { %>
-        <p class="ml-3">
-        <form action="/cancel-order" method="post" id="orders-form">
-          <input type="hidden" name="orderId" value="<%= order._id %>">
-          <input type="hidden" name="productId" value="<%= order.orderedProducts[0]._id %>">
-          <button type="submit" class="btn btn-sm btn-outline-danger mb-3">
-            Cancel
-          </button>
-        </form>
-        </p>
-        <% } else if (order.status==='Delivered' ) { %>
-          <span class="text-success">Delivered</span>
-        <% } %>
-        <% } %>
-      </div>
-    </div>
-    <% }) %>
     <% } %>
-    <!-- Pagination controls -->
-
-    <div class="pagination">
-      <% for (let i = 1; i <= totalPages; i++) { %>
-      <a href="?page=<%= i %>" class="page-link"><%= i %></a>
-      <% } %>
-    </div>
-
-
-    <div class="row" style="margin-top: 15px;">
-      <div class="col-md-6">
-        <div class="row">
-          <div class="col-md-6">
-            <p><a href="/shop" class="btn btn-outline-primary btn-sm btn-block">Continue
-                Shopping
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
+  
 </section>
 
 <!-- Cancel Order Modal -->
@@ -105,7 +124,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="cancelOrderModalLabel">Confirm Cancel Order</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" onclick="closeCancelOrderModal()" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -291,6 +310,10 @@
 <!--===============================================================================================-->
 <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 <script>
+  function closeCancelOrderModal() {
+  $('#cancelOrderModal').modal('hide');
+}
+
   $('.js-pscroll').each(function() {
     $(this).css('position', 'relative');
     $(this).css('overflow', 'hidden');

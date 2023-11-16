@@ -8,6 +8,8 @@ const Address = require("../models/addressModel");
 const Order = require("../models/orderModel");
 const Category = require('../models/categoryModel')
 const { ObjectId } = require('mongodb');
+const Return = require('../models/returnProductModel')
+const Cancel = require('../models/cancelProductModel')
 
 let salt;
 
@@ -1038,6 +1040,56 @@ const cancelOrder = async (req, res) => {
     console.log(error);
   }
 };
+
+const getCancelProductForm = async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.session.user);
+    const product = await Product.findById(req.query.product);
+    const category = await Category.findById(req.query.category);
+    const defaultAddress = await Address.findOne({ userId: req.session.user, default: true });
+    res.render("user/cancelForm", {
+      isLoggedIn,
+      currentUser,
+      currentAddress: defaultAddress,
+      order: req.query.order,
+      category,
+      product,
+      quantity: req.query.quantity,
+      totalPrice: req.query.totalPrice,
+  });
+  }catch (error) {
+    console.log(error.message);
+  }
+}
+
+const requestCancelProduct = async (req, res) => {
+  try {
+      const foundOrder = await Order.findById(req.body.order).populate('products.product');
+      const foundProduct = await Product.findById(req.body.productId);
+      const cancelProduct = new Cancel({
+          user: req.session.user,
+          order: foundOrder._id,
+          product: foundProduct._id,
+          quantity: parseInt(req.body.quantity),
+          totalPrice: parseInt(req.body.totalPrice),
+          reason: req.body.reason,
+          address: req.body.address
+      });
+      await cancelProduct.save();
+
+      foundOrder.products.forEach((product) => {
+          if (product.product._id.toString() === foundProduct._id.toString()) {
+              product.cancelRequested = 'Pending';
+          }
+      });
+      await foundOrder.save();
+
+      res.redirect("/order");
+  } catch (error) {
+      console.log(error.message);
+  }
+};
+
 const loadOrderSuccess = async (req, res) => {
   try {
     console.log(req.query.orderId);
@@ -1247,5 +1299,8 @@ module.exports = {
   loadOTPForgetPassPage,
   verifyOTPForgetPassPage,
   changePassFor,
-  loadOrderSuccess
+  loadOrderSuccess,
+  getCancelProductForm,
+  requestCancelProduct,
+  
 };

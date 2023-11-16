@@ -201,6 +201,9 @@ const loadEditProduct = async (req,res)=>{
     const id = req.query.id;
     const categories = await Category.find()
     const product = await Product.findOne({_id:id}).populate('category');
+    console.log(product);
+    console.log(categories);
+    
     res.render('admin/editProduct', {product, categories});
   }catch (error) {
     console.log(error.message);

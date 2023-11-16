@@ -62,7 +62,9 @@ router.post('/checkoutAddAddressPost',auth.isLogin,userControllers.checkoutAddAd
 //orders
 router.post('/order-product',auth.isLogin,userControllers.orderProduct)
 router.get('/order',auth.isLogin,userControllers.loadOrder)
-router.post('/cancel-order',auth.isLogin,userControllers.cancelOrder)
+// router.post('/cancel-order',auth.isLogin,userControllers.cancelOrder)
+router.get('/cancel-order',auth.isLogin,userControllers.getCancelProductForm)
+router.post('/cancel-order',auth.isLogin,userControllers.requestCancelProduct)
 router.get('/orderSuccess',auth.isLogin,userControllers.loadOrderSuccess)
 
 //resendOtp
