@@ -7,7 +7,7 @@ const ImageMiddleware = require('../middlewares/imageUpload')
 
 //get
 router.get("/login", adminControllers.adminLogin);
-router.get("/dashboard", auth.adminLogin, adminControllers.dashboard);
+router.get("/dashboard", auth.adminLogin, adminControllers.loadDashboard);
 router.get("/users",auth.adminLogin,adminControllers.adminUsers)
 router.get("/users/unblock-theUser",auth.adminLogin,adminControllers.UnblockTheUser)
 router.get("/users/block-theUser",auth.adminLogin,adminControllers.blockTheUser)
@@ -35,6 +35,8 @@ router.patch("/products/:id/img/add",auth.adminLogin,ImageMiddleware.uploadProdu
 router.get('/orders',auth.adminLogin,adminControllers.loadOrder)
 router.get('/order/action-update',auth.adminLogin,adminControllers.updateActionOrder)
 router.get('/order-cancel',auth.adminLogin,adminControllers.updateOrderCancel)
+
+
 
 
 

@@ -33,9 +33,7 @@ app.use(
 
 app.use("/", userRoute);
 app.use("/admin", adminRoute)
-app.get('/salman',(req,res)=>{
-  res.render('user/orderSuccess');
-})
+
 
 
 Connection();
