@@ -1102,6 +1102,56 @@ const loadOrderSuccess = async (req, res) => {
   }
 }
 
+const getReturnProductForm = async (req, res) => {
+  try {
+      const currentUser = await User.findById(req.session.user);
+      const product = await Product.findById(req.query.product);
+      const category = await Category.findById(req.query.category);
+      const defaultAddress = await Address.findOne({ userId: req.session.user, default: true });
+      res.render("user/returnForm", {
+          isLoggedIn,
+          currentUser,
+          currentAddress: defaultAddress,
+          order: req.query.order,
+          category,
+          product,
+          quantity: req.query.quantity,
+          totalPrice: req.query.totalPrice,
+      });
+  } catch (error) {
+      console.log(error.message);
+  }
+};
+
+const requestReturnProduct = async (req, res) => {
+  try {
+      const foundOrder = await Order.findById(req.body.order).populate('products.product');
+      const foundProduct = await Product.findById(req.body.productId);
+      const returnProduct = new Return({
+          user: req.session.user,
+          order: foundOrder._id,
+          product: foundProduct._id,
+          quantity: parseInt(req.body.quantity),
+          totalPrice: parseInt(req.body.totalPrice),
+          reason: req.body.reason,
+          condition: req.body.condition,
+          address: req.body.address
+      });
+      await returnProduct.save();
+
+      foundOrder.products.forEach((product) => {
+          if (product.product._id.toString() === foundProduct._id.toString()) {
+              product.returnRequested = 'Pending';
+          }
+      });
+      await foundOrder.save();
+
+      res.redirect("/order");
+  } catch (error) {
+     console.log(error.message);
+  }
+};
+
 
 const resendOTP = async (req, res) => {
   try {
@@ -1302,5 +1352,7 @@ module.exports = {
   loadOrderSuccess,
   getCancelProductForm,
   requestCancelProduct,
+  getReturnProductForm,
+  requestReturnProduct
   
 };

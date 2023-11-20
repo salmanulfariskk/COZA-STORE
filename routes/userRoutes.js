@@ -66,6 +66,8 @@ router.get('/order',auth.isLogin,userControllers.loadOrder)
 router.get('/cancel-order',auth.isLogin,userControllers.getCancelProductForm)
 router.post('/cancel-order',auth.isLogin,userControllers.requestCancelProduct)
 router.get('/orderSuccess',auth.isLogin,userControllers.loadOrderSuccess)
+router.get('/return-product',auth.isLogin,userControllers.getReturnProductForm)
+router.post('/return-product',auth.isLogin,userControllers.requestReturnProduct)
 
 //resendOtp
 router.post('/resend-otp',userControllers.resendOTP)

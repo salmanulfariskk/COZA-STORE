@@ -35,9 +35,10 @@ router.patch("/products/:id/img/add",auth.adminLogin,ImageMiddleware.uploadProdu
 router.get('/orders',auth.adminLogin,adminControllers.loadOrder)
 router.get('/order/action-update',auth.adminLogin,adminControllers.updateActionOrder)
 router.get('/order-cancel',auth.adminLogin,adminControllers.updateOrderCancel)
-
-
-
+router.get('/return-requests',auth.adminLogin,adminControllers.getReturnRequests)
+router.post('/return-requests',auth.adminLogin,adminControllers.returnRequestAction)
+router.get('/cancel-requests',auth.adminLogin,adminControllers.getCancelRequests)
+router.post("/cancel-requests", auth.adminLogin, adminControllers.returnCancelAction)
 
 
 // router.get("/", checkAuth, getDashboard);

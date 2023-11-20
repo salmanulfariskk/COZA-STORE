@@ -7,6 +7,8 @@ const Order = require("../models/orderModel");
 const fs = require("fs")
 const path = require("path");
 const User = require("../models/userModel");
+const Return = require("../models/returnProductModel")
+const Cancel = require("../models/cancelProductModel")
 
 const adminLogin = async (req, res) => {
   res.render("admin/login");
@@ -312,6 +314,155 @@ const updateOrderCancel = async (req, res) => {
 
 }
 
+const getReturnRequests = async (req,res) => {
+  try {
+    const ITEMS_PER_PAGE = 5
+
+    const page = parseInt(req.query.page)||1
+
+    const totalRequests = await Return.countDocuments()
+
+    const returnRequests = await Return.find().populate([{path:'user'},{path:'order'},{path:'product'}])
+    .sort({createdAt:-1})
+    .skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE)
+
+    const totalPages = Math.ceil(totalRequests/ITEMS_PER_PAGE)
+
+    res.render('admin/returns',{returnRequests,totalPages})
+  }catch (error) {
+    console.log(error.message);
+  }
+}
+
+const returnRequestAction = async (req, res) => {
+  try {
+      const foundRequet = await Return.findById(req.body.request);
+      const foundOrders = await Order.findById(req.body.order);
+      const currentProduct = foundOrders.products.find((product) => product.product.toString() === req.body.product.toString());
+      if (req.body.action === "approve") {
+          foundRequet.status = 'Approved';
+          currentProduct.returnRequested = 'Approved';
+      } else if (req.body.action === "reject") {
+          foundRequet.status = 'Rejected';
+          currentProduct.returnRequested = 'Rejected';
+      } else {
+          
+          const EditProduct = await Product.findOne({ _id: req.body.product });
+
+          
+  
+          const currentStock = EditProduct.quantity;
+          EditProduct.quantity = currentStock + foundRequet.quantity;
+  
+          await EditProduct.save();
+
+          foundRequet.status = 'Completed';
+          currentProduct.returnRequested = 'Completed';
+      }
+      await foundRequet.save();
+      await foundOrders.save();
+      res.redirect('/admin/return-requests');
+  } catch (error) {
+     console.log(error.message);
+  }
+};
+
+const getCancelRequests =async (req, res) => {
+  try {
+    const ITEMS_PER_PAGE = 5 
+
+    const page = parseInt(req.query.page)||1
+
+    const totalRequests = await Cancel.countDocuments()
+
+    const cancelRequests = await Cancel.find().populate([
+      {path:'user'},
+      {path:'order'},
+      {path:'product'}
+    ])
+    .sort({createdAt:-1})
+    // .skip((page -1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE)
+
+    const totalPages = Math.ceil(totalRequests / ITEMS_PER_PAGE)
+
+    res.render('admin/cancels',{cancelRequests,totalPages})
+  }catch (error) {
+    console.log(error.message);
+  }
+}
+
+const returnCancelAction = async (req, res) => {
+  try {
+      const foundCancel = await Cancel.findById(req.body.request).populate('user');
+      const foundOrders = await Order.findById(req.body.order).populate('products.product');
+      const currentProduct = foundOrders.products.find((product) => product.product._id.toString() === req.body.product.toString())
+      if (req.body.action === "approve") {
+          foundCancel.status = 'Approved';
+          currentProduct.cancelRequested = 'Approved';
+      } else {
+
+          if (foundOrders.paymentMethod !== 'Cash on delivery') {
+              const currentUser = await User.findById(foundCancel.user._id);
+              console.log(currentUser);
+  
+              if (currentUser) { // Check if currentUser is defined
+                  const refundAmount = currentProduct.total;
+                  currentUser.wallet.balance += refundAmount;
+  
+                  const transactionData = {
+                      amount: refundAmount,
+                      description: 'Order cancelled.',
+                      type: 'Credit',
+                  };
+                  currentUser.wallet.transactions.push(transactionData);
+  
+                  // Save changes to the user's wallet, canceled product, and order
+                  await currentUser.save();
+  
+              } else {
+                  console.log('user not found');
+              }
+          }
+          foundCancel.status = 'Completed';
+          currentProduct.isCancelled = true;
+          currentProduct.cancelRequested = 'Completed'
+  
+          const EditProduct = await Product.findOne({ _id: currentProduct.product._id });
+  
+          const currentStock = EditProduct.stock;
+          EditProduct.stock = currentStock + currentProduct.quantity;
+
+          foundOrders.totalAmount -= currentProduct.total
+  
+          await EditProduct.save();
+  
+          // Function to check if all products in the order are cancelled
+          function areAllProductsCancelled(order) {
+              for (const product of order.products) {
+                  if (!product.isCancelled) {
+                      return false; // If any product is not cancelled, return false
+                  }
+              }
+              return true; // All products are cancelled
+          }
+  
+          // Check if all products in the order are cancelled
+          if (areAllProductsCancelled(foundOrders)) {
+              // Update the order status to "Cancelled"
+  
+              foundOrders.totalAmount -= 0
+              foundOrders.status = "Cancelled";
+          }
+  
+      }
+      await foundCancel.save();
+      await foundOrders.save();
+      res.redirect('/admin/cancel-requests');
+  } catch (error) {
+      console.log(error.message);
+  }
+};
+
 //sales report
 const loadDashboard = async (req, res) => {
   try {
@@ -478,5 +629,9 @@ module.exports = {
   loadOrder,
   updateActionOrder,
   updateOrderCancel,
-  loadDashboard
+  loadDashboard,
+  getReturnRequests,
+  returnRequestAction,
+  getCancelRequests,
+  returnCancelAction
  }
