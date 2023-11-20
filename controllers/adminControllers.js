@@ -250,7 +250,7 @@ const updateProductImages = async (req, res) => {
 
 //order
 const loadOrder = async (req, res) => {
-  const perPage = 8; // Number of orders per page
+  const perPage = 50; // Number of orders per page
   const page = req.query.page || 1; // Get the current page from query parameters (default to page 1)
   const { customer, status } = req.query;
   try {
@@ -268,6 +268,7 @@ const loadOrder = async (req, res) => {
           .skip((page - 1) * perPage) // Skip orders on previous pages
           .limit(perPage); // Limit the number of orders per page
 
+      console.log(orders.length);    
       const totalOrders = await Order.countDocuments();
       const totalPages = Math.ceil(totalOrders / perPage);
       res.render("admin/order", {

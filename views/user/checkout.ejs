@@ -166,9 +166,12 @@
 						<form action="/order-product" method="post" id="order">
 							<div class="mb-3 form-check p-t-27">
 								<span class="mtext-101 cl2">Select Payment Option</span>
-								<input type="checkbox" class="form-check-input" style="margin-top: 15px;"
+								<input type="radio" class="form-check-input" style="margin-top: 15px;"
 									id="cashOnDelivery" name="paymentOptions" value="Cash on delivery">
 								<label class="form-check-label" for="savePaymentInfo" style="margin-top: 12px;">Cash on delivery</label>
+								<input type="radio" class="form-check-input" style="margin-top: 15px;"
+									id="razorPay" name="paymentOptions" value="Razorpay">
+								<label class="form-check-label" for="savePaymentInfo" style="margin-top: 12px;">Razorpay</label>
 							</div>
 							<input type="hidden" name="discount" value="<%= discount %>">
 							<input type="hidden" name="currentCoupon" value="<%= currentCoupon %>">

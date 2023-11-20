@@ -10,6 +10,7 @@ const Category = require('../models/categoryModel')
 const { ObjectId } = require('mongodb');
 const Return = require('../models/returnProductModel')
 const Cancel = require('../models/cancelProductModel')
+const razorpay = require('../controllers/utils/razorpayConfig')
 
 let salt;
 
@@ -783,7 +784,7 @@ const ChangePass = async (req, res) => {
 };
 
 //orders
-const orderProduct = async (req, res) => {
+const   orderProduct = async (req, res) => {
   try {
     const selectedPaymentOptions = req.body.paymentOptions;
 
@@ -826,7 +827,7 @@ const orderProduct = async (req, res) => {
 
       if (selectedPaymentOptions === "Cash on delivery") {
         await order.save();
-        console.log("there");
+      
       } else if (selectedPaymentOptions === "Razorpay") {
         // Create a Razorpay order
         const razorpayOrder = await razorpay.orders.create({
@@ -841,7 +842,7 @@ const orderProduct = async (req, res) => {
         order.razorpayOrderId = razorpayOrder.id;
 
         // Redirect the user to the Razorpay checkout page
-        return res.render("users/razorpay", {
+        return res.render("user/razorpay", {
           activePage: "shopingCart",
           order: razorpayOrder,
           key_id: process.env.RAZORPAY_ID_KEY,
@@ -927,6 +928,52 @@ const orderProduct = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+  }
+};
+const saveRzpOrder = async (req, res) => {
+  try {
+      const { transactionId, orderId, signature } = req.body;
+      const amount = parseInt(req.body.amount / 100);
+      const currentUser = await User.findById(req.session.user).populate('cart.product');
+      const deliveryAddress = await Address.findOne({ userId: req.session.user, default: true });
+      if (transactionId && orderId && signature) {
+
+          const orderedProducts = currentUser.cart.map((item) => {
+              return {
+                  product: item.product,
+                  quantity: item.quantity,
+                  total: item.total,
+              }
+          });
+
+          let newOrder = new Order({
+              user: req.session.user,
+              products: orderedProducts,
+              totalAmount: amount,
+              paymentMethod: 'Razorpay',
+              deliveryAddress,
+          });
+
+          await newOrder.save()
+
+          // stock update
+          for (let i = 0; i < currentUser.cart.length; i++) {
+              const changeStock = await Product.findById(currentUser.cart[i].product)
+              await Product.updateOne({ _id: changeStock._id }, { quantity: changeStock.quantity - currentUser.cart[i].quantity })
+              await changeStock.save();
+          }
+
+          currentUser.cart = [];
+          currentUser.totalCartAmount = 0;
+
+          await currentUser.save();
+
+          return res.status(200).json({
+              message: "order placed successfully",
+          });
+      }
+  } catch (error) {
+      console.log(error.message);
   }
 };
 
@@ -1353,6 +1400,7 @@ module.exports = {
   getCancelProductForm,
   requestCancelProduct,
   getReturnProductForm,
-  requestReturnProduct
+  requestReturnProduct,
+  saveRzpOrder
   
 };

@@ -8,6 +8,7 @@ const session = require('express-session');
 const Connection = require("./database/db");
 const nocache = require("nocache");
 const morgan = require('morgan')
+const Razorpay = require('razorpay')
 
 const app = express();
 app.use(methodOverride("_method"))
@@ -33,8 +34,6 @@ app.use(
 
 app.use("/", userRoute);
 app.use("/admin", adminRoute)
-
-
 
 Connection();
 
