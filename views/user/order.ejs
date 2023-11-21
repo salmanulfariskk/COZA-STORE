@@ -8,7 +8,7 @@
     <% orders.forEach((order)=> { %>
     <div class="d-flex flex-column flex-md-row border p-3 mb-3">
       <div class="col-md-3 col-12 d-flex justify-content-center mb-5">
-        <a href="/productDetail?id=<%= order.orderedProducts[0]._id %>">
+        <a href="/productDetails?productId=<%= order.orderedProducts[0]._id %>">
           <img src="<%= order.orderedProducts[0].images[0] %>" alt="Image" height="180px" width="180px" class="img-fluid">
         </a>
       </div>

@@ -297,7 +297,6 @@ const updateActionOrder = async (req, res) => {
 const updateOrderCancel = async (req, res) => {
 
   try {
-
       const foundOrder = await Order.findById(req.query.orderId);
 
       for (let i = 0; i < foundOrder.products.length; i++) {
@@ -430,8 +429,8 @@ const returnCancelAction = async (req, res) => {
   
           const EditProduct = await Product.findOne({ _id: currentProduct.product._id });
   
-          const currentStock = EditProduct.stock;
-          EditProduct.stock = currentStock + currentProduct.quantity;
+          const currentStock = EditProduct.quantity;
+          EditProduct.quantity = currentStock + currentProduct.quantity;
 
           foundOrders.totalAmount -= currentProduct.total
   
@@ -606,6 +605,90 @@ const loadDashboard = async (req, res) => {
   }
 }
 
+const loadSalesReport = async (req, res) => {
+  try {
+      let startOfMonth;
+      let endOfMonth;
+      if (req.query.filtered) {
+          startOfMonth = new Date(req.body.from);
+          endOfMonth = new Date(req.body.upto);
+          endOfMonth.setHours(23, 59, 59, 999);
+      } else {
+          const today = new Date();
+          startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+          endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      }
+      const filteredOrders = await Order.aggregate([
+          {
+              $match: {
+                  orderDate: {
+                      $gte: startOfMonth,
+                      $lte: endOfMonth
+                  }
+              }
+          },
+          {
+              $unwind: "$products" // Unwind the products array
+          },
+          {
+              $lookup: {
+                  from: "products", // Replace with the actual name of your products collection
+                  localField: "products.product",
+                  foreignField: "_id",
+                  as: "productInfo" // Store the product info in the "productInfo" array
+              }
+          },
+          {
+              $addFields: {
+                  "products.productInfo": {
+                      $arrayElemAt: ["$productInfo", 0] // Get the first (and only) element of the "productInfo" array
+                  }
+              }
+          },
+          {
+              $match: {
+                  "products.returnRequested": { $in: ["Nil", "Rejected"] }
+              }
+          },
+          {
+              $lookup: {
+                  from: "users",
+                  localField: "user",
+                  foreignField: "_id",
+                  as: "userInfo"
+              }
+          },
+          {
+              $unwind: "$userInfo"
+          },
+          {
+              $project: {
+                  _id: 1,
+                  userInfo: 1,
+                  totalAmount: 1,
+                  paymentMethod: 1,
+                  deliveryAddress: 1,
+                  status: 1,
+                  orderDate: 1,
+                  deliveryDate: 1,
+                  "products.quantity": 1,
+                  "products.total": 1,
+                  "products.isCancelled": 1,
+                  "products.returnRequested": 1,
+                  "products.productInfo": 1
+              }
+          }
+      ]);
+
+      res.render('admin/salesReport', {
+          salesReport: filteredOrders,
+          activePage: 'salesReport',
+      });
+  } catch (error) {
+      console.log(error.message);
+  }
+};
+
 
 module.exports = { 
   adminLogin,
@@ -634,5 +717,6 @@ module.exports = {
   getReturnRequests,
   returnRequestAction,
   getCancelRequests,
-  returnCancelAction
+  returnCancelAction,
+  loadSalesReport
  }

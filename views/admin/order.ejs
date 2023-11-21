@@ -101,11 +101,12 @@
                         href="/admin/order/action-update?action=Delivered&orderId=<%= orders[i]._id %>"
                         >Delivered</a
                       >
-                      <a
+                      <!-- <a
+                        // i removed cancel order code from here  < % = orders[i]._id %>
                         class="dropdown-item"
-                        href="/admin/order-cancel?action=Cancelled&orderId=<%= orders[i]._id %>"
+                        href="/admin/order-cancel?action=Cancelled&orderId="
                         >Cancel order</a
-                      >
+                      > -->
                     </div>
                   </div>
                   <%}%>

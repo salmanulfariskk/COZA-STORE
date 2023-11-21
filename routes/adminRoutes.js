@@ -40,6 +40,10 @@ router.post('/return-requests',auth.adminLogin,adminControllers.returnRequestAct
 router.get('/cancel-requests',auth.adminLogin,adminControllers.getCancelRequests)
 router.post("/cancel-requests", auth.adminLogin, adminControllers.returnCancelAction)
 
+//sales report 
+router.get('/sales-report',auth.adminLogin,adminControllers.loadSalesReport)
+router.post('/sales-report',auth.adminLogin,adminControllers.loadSalesReport)
+
 
 // router.get("/", checkAuth, getDashboard);
 // router.route("/login").get(isLoggedIn, getLogin).post(loginAdmin);
