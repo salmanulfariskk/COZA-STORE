@@ -618,17 +618,36 @@ const loadSalesReport = async (req, res) => {
           startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
           endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
       }
+
+      var orderStatusFilter = { status: { $in: ["Processing", "Shipped", "Cancelled", "Delivered"] } };
+      // Check if order status is provided in the request
+      if (req.body.status) {
+          if (req.body.status === "Cancelled") {
+              orderStatusFilter = { "products.isCancelled": true };
+          } else if (req.body.status === "Returned") {
+              orderStatusFilter = { "products.returnRequested": "Completed" };
+          } else {
+              orderStatusFilter = {
+                  status: req.body.status,
+                  "products.isCancelled": { $ne: true },
+                  "products.returnRequested": { $ne: "Completed" },
+              };
+          }
+      }
+
       const filteredOrders = await Order.aggregate([
+          {
+              $unwind: "$products" // Unwind the products array
+          },
           {
               $match: {
                   orderDate: {
                       $gte: startOfMonth,
                       $lte: endOfMonth
-                  }
-              }
-          },
-          {
-              $unwind: "$products" // Unwind the products array
+                  },
+                  ...orderStatusFilter
+              },
+              // Use the complete orderStatusFilter object
           },
           {
               $lookup: {
@@ -643,11 +662,6 @@ const loadSalesReport = async (req, res) => {
                   "products.productInfo": {
                       $arrayElemAt: ["$productInfo", 0] // Get the first (and only) element of the "productInfo" array
                   }
-              }
-          },
-          {
-              $match: {
-                  "products.returnRequested": { $in: ["Nil", "Rejected"] }
               }
           },
           {
@@ -680,9 +694,20 @@ const loadSalesReport = async (req, res) => {
           }
       ]);
 
+      let orderDone = 0
+      let totalRevenue = 0
+      for(let i=0; i<filteredOrders.length; i++){
+          if(filteredOrders[i].status === "Delivered" && filteredOrders[i].products.returnRequested !== "Completed") {
+              orderDone += 1
+              totalRevenue += filteredOrders[i].products.total
+          }
+      }
+
       res.render('admin/salesReport', {
           salesReport: filteredOrders,
           activePage: 'salesReport',
+          orderDone,
+          totalRevenue
       });
   } catch (error) {
       console.log(error.message);
