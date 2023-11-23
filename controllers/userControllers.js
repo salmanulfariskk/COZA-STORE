@@ -440,7 +440,11 @@ const deleteItemFromCart = async (req, res) => {
 //about
 const loadAbout = async (req,res) => {
   try {
-    res.render('user/about',{isLoggedIn})
+    var isLog = false
+    if(req.session.user){
+    isLog = true
+    }
+    res.render('user/about',{isLoggedIn:isLog})
   }catch (error) {
     console.log(error.message);
   }
@@ -448,7 +452,15 @@ const loadAbout = async (req,res) => {
 //contact
 const loadContact = async (req,res) => {
   try {
-    res.render('user/contact',{isLoggedIn})
+    
+    var isLog = false
+    if(req.session.user){
+    isLog = true
+    }
+    res.render('user/contact',{isLoggedIn:isLog})
+
+
+   
   }catch (error) {
     console.log(error.message);
   }
