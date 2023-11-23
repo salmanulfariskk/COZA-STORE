@@ -37,6 +37,11 @@ router.get("/profile/deletePhoto", auth.isLogin, userControllers.deleteProfilePh
 router.get("/edit-profile", auth.isLogin,userControllers.loadEditProfile )
 router.post("/edit-profile",auth.isLogin,userControllers.editProfile)
 
+//about
+router.get('/about',userControllers.loadAbout)
+//contact
+router.get('/contact',userControllers.loadContact)
+
 //password
 router.get('/change-password', auth.isLogin, userControllers.loadPassword)
 router.post('/change-password', auth.isLogin, userControllers.ChangePass)

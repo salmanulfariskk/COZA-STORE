@@ -437,6 +437,23 @@ const deleteItemFromCart = async (req, res) => {
   }
 };
 
+//about
+const loadAbout = async (req,res) => {
+  try {
+    res.render('user/about',{isLoggedIn})
+  }catch (error) {
+    console.log(error.message);
+  }
+}
+//contact
+const loadContact = async (req,res) => {
+  try {
+    res.render('user/contact',{isLoggedIn})
+  }catch (error) {
+    console.log(error.message);
+  }
+}
+
 
 //user profile
 const loadProfile = async (req, res) => {
@@ -1401,6 +1418,8 @@ module.exports = {
   requestCancelProduct,
   getReturnProductForm,
   requestReturnProduct,
-  saveRzpOrder
+  saveRzpOrder,
+  loadAbout,
+  loadContact
   
 };
