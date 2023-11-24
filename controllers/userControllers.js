@@ -181,36 +181,44 @@ const isLoggedIn = (req, res) => {
 const signValidation = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email && !password) {
+    if (!email || !password) {
       res.render("user/login", {
         commonError: "Please enter your email and password",
       });
+      return; // Add a return statement to exit the function
     }
+
     const user = await User.findOne({ email });
+
+    if (!user) {
+      res.render("user/login", { commonError: "User not found" });
+      return; // Add a return statement to exit the function
+    }
+
     if (user.blocked === true) {
       res.render("user/login", { commonError: "Your account is blocked" });
+      return; // Add a return statement to exit the function
     }
+
     if (user.verified === false) {
       return res.render("user/login", {
-        commonError: "Your account not verified",
+        commonError: "Your account is not verified",
       });
     }
 
-    if (!user) {
-      res.render("user/login", { commonError: "user not found" });
+    const equalPassword = await bcrypt.compare(password, user.password);
+
+    if (equalPassword) {
+      req.session.user = user._id;
+      res.redirect("/");
     } else {
-      const equalPassword = await bcrypt.compare(password, user.password);
-      if (equalPassword) {
-        req.session.user = user._id;
-        res.redirect("/");
-      } else {
-        res.render("user/login", { commonError: "password is incorrect..!" });
-      }
+      res.render("user/login", { commonError: "Password is incorrect..!" });
     }
   } catch (error) {
     console.log(error.message);
   }
 };
+
 //send email models
 let transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -1168,10 +1176,11 @@ const requestCancelProduct = async (req, res) => {
 
 const loadOrderSuccess = async (req, res) => {
   try {
-    console.log(req.query.orderId);
-   const orderData = await Order.findById(req.query.orderId)
-   const randomSixDigitNumber = Math.floor(100000 + Math.random() * 900000);
-   res.render('user/orderSuccess',{orderData,randomSixDigitNumber})
+   const userId = req.session.user;
+  
+    const order = await Order.findOne({ user: userId }).sort({ orderDate: -1 })
+    const randomSixDigitNumber = Math.floor(100000 + Math.random() * 900000);
+    res.render('user/orderSuccess',{orderData:order,randomSixDigitNumber})  
 
   }catch (error){
     console.log(error.message);
