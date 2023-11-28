@@ -338,16 +338,22 @@ const addToCart = async (req, res) => {
   try {
     const productId = req.query.productId;
     const productData = await Product.findById(productId);
+    let total = 0
+    if (productData.offer > 0){
+      total = productData.offerPrice
+    } else {
+      total = productData.price
+    }
 
     const obj = {
       product: productData._id,
       quantity: 1,
-      total: productData.price,
+      total,
     };
 
     const userData = await User.findById(req.session.user);
 
-    const totalCartAmt = userData.totalCartAmount + productData.price;
+    const totalCartAmt = userData.totalCartAmount + total;
 
     await User.updateOne(
       { _id: req.session.user },

@@ -506,10 +506,17 @@
             <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
                 <!-- Block2 -->
                 <div class="block2">
+                      <% if (products[i].offer!==null&&products[i].offerPrice>0) { %>
+                
+                              <div class="image-badge">
+                                <p><%= products[i].offer %>% off</p>
+                              </div>
+                            
+                      <% }%>
+                  
                     <div class="block2-pic hov-img0">
                         <a href="/productDetails?productId=<%= products[i]._id %>"><img src="<%= products[i].images[0] %>" alt="IMG-PRODUCT"></a>
                     </div>
-
                     <div class="block2-txt flex-w flex-t p-t-14">
                         <div class="block2-txt-child1 flex-col-l ">
                             <a href="/productDetails?productId=<%= products[i]._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
@@ -517,7 +524,13 @@
                             </a>
 
                             <span class="stext-105 cl3">
+                                <% if(products[i].offer!==null&&products[i].offerPrice>0){ %>
+
+                               <s style="color: #fa4251">$<%= products[i].price %></s> $<%= products[i].offerPrice %>
+                            
+                               <%  }else{ %>
                                 $<%= products[i].price %>
+                                <% } %>
                             </span>
                         </div>
 
@@ -536,4 +549,66 @@
 
     </div>
 </section>
+<style>
+    .grid {
+  position: relative;
+  width: 15%;
+  height: 350px;
+  float: left;
+}
+.cell {
+    border: 1px solid black;
+    margin: 0 13.5px 25px;
+    height: 100%;
+}
+
+.image-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    width: 100px;
+    height: 100px;
+    pointer-events: none;
+}
+
+.image-badge p {
+    position: absolute;
+    text-align: center;
+    -ms-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -webkit-transform: rotate(
+45deg
+);
+    -o-transform: rotate(45deg);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-size: 15px;
+    font-weight: 100;
+    margin: 0;
+    padding: 0 12px;
+    transform-origin: 50px 37px;
+    height: 50px;
+    width: 100px;
+    padding-top: 10px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-badge:before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    box-sizing: border-box;
+    border-style: inset;
+    border-width: 0 100px 100px 100px;
+    border-color:  transparent  #00174f transparent transparent;
+    right: 13.5px;
+}
+
+</style>
 <%- include('../partials/user/footer') %>

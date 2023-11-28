@@ -18,7 +18,7 @@ const upload = multer({ storage, fileFilter })
 exports.uploadProductImages = upload.fields([
   {
     name: 'images',
-    maxCount: 3
+    maxCount: 10
   }
 ])
 

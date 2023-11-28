@@ -20,6 +20,8 @@ include('../partials/admin/sidepanel') %>
                     <th>Category</th>
                     <th>Quantity</th>
                     <th>Price</th>
+                    <th>Offer in Percentage</th>
+                    <th>Offer Price</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -45,6 +47,8 @@ include('../partials/admin/sidepanel') %>
                     </td>
                     <td><%= item.quantity %></td>
                     <td><%= item.price %></td>
+                    <td style="color: blue;padding-left: 60px;"><%= item.offer %></td>
+                    <td style="color: blue;padding-left: 60px;"><%= item.offerPrice %></td>
                     <td>
                       <a
                         href="/admin/products/edit-product?id=<%= item._id %>"

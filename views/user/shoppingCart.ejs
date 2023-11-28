@@ -40,7 +40,12 @@
                                     </a>
                                 </td>
                                 <td class="column-2"><%= userData.cart[i].product.productName %></td>
-                                <td class="column-3">$ <%= userData.cart[i].product.price %></td>
+                                <td class="column-3">$ <% if(userData.cart[i].product.offer > 0){ %>
+                                                        <%= userData.cart[i].product.offerPrice %>
+                                                       <% } else { %>  
+                                                        <%= userData.cart[i].product.price %>
+                                                       <% } %>  
+                                </td>                       
                                 <td class="column-4">
                                     <div class="wrap-num-product flex-w m-l-auto m-r-0">
                                         <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" onclick="updateCartItem('<%= userData.cart[i].product._id %>', 'decrement','<%= userData.cart[i]._id %>')">

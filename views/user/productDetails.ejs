@@ -115,10 +115,15 @@
 						<h4 class="mtext-105 cl2 js-name-detail p-b-14">
 							<%= product.productName %>
 						</h4>
-
+						<% if(product.offer!==null&&product.offerPrice>0){ %>
 						<span class="mtext-106 cl2">
-							$<%= product.price %>
+							<s style="color: red;">$<%= product.price %></s> $<%= product.offerPrice %>
 						</span>
+						<% }else{ %>
+							<span class="mtext-106 cl2">
+								$<%= product.price %>
+							</span>
+						<% } %>
 
 						<p class="stext-102 cl3 p-t-23">
 							<%= product.description %>

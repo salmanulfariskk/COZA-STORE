@@ -174,12 +174,15 @@ const addProductPost = async (req, res) => {
   try {
     const imagesWithPath = req.body.images.map((img) => "/products/" + img);
     console.log(imagesWithPath);
-    const { productName, category, quantity, description, price } = req.body;
+    const { productName, category, quantity, description, price, offer } = req.body;
+    const offerPrice = price - (price*offer)/100
     const newProduct = new Product({
       productName: productName,
       description: description,
       quantity: quantity,
       price: price,
+      offer: offer,
+      offerPrice:offerPrice,
       category: category,
       images: imagesWithPath,
     });

@@ -33,6 +33,13 @@ const productSchema = new mongoose.Schema({
     blocked:{
         type:Boolean,
         default:false
+    },
+    offer:{
+        type:Number,
+        default:0
+    },
+    offerPrice:{
+        type:Number
     }
 
    
