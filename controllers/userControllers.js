@@ -400,20 +400,36 @@ const updateCart = async (req, res) => {
 
       for (const item of currentUser.cart) {
         const currentProduct = await Product.findById(item.product);
-        item.total = item.quantity * currentProduct.price;
+        if(currentProduct.offer > 0){
+          item.total = item.quantity * currentProduct.offerPrice;
+        } else {
+          item.total = item.quantity * currentProduct.price;
+        }
+        
       }
 
       const grandTotal = currentUser.cart.reduce((total, element) => {
-        return total + element.quantity * element.product.price;
+        if(element.product.offer > 0){
+          return total + element.quantity * element.product.offerPrice;
+        } else {
+          return total + element.quantity * element.product.price;
+        }
+        
       }, 0);
 
       currentUser.totalCartAmount = grandTotal;
+      
+      if(product.offer > 0){
+        var totalPrice = product.offerPrice * cartItem.quantity
+      } else {
+        var totalPrice = product.price * cartItem.quantity
+      }
 
       await currentUser.save();
       return res.status(200).json({
         message: "Success",
         quantity: cartItem.quantity,
-        totalPrice: product.price * cartItem.quantity,
+        totalPrice,
         grandTotal,
         stock: product.quantity,
         insufficientStock,

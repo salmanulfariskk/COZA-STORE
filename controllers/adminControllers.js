@@ -173,9 +173,16 @@ const addProduct = async (req, res) => {
 const addProductPost = async (req, res) => {
   try {
     const imagesWithPath = req.body.images.map((img) => "/products/" + img);
-    console.log(imagesWithPath);
-    const { productName, category, quantity, description, price, offer } = req.body;
-    const offerPrice = price - (price*offer)/100
+    const { productName, category, quantity, description, price } = req.body;
+    console.log(typeof price);
+    if(!req.body.offer){
+      var offer = 0
+      var offerPrice = 0
+    } else {
+      var offerPrice = Math.round(req.body.price - (req.body.price * req.body.offer) / 100);
+
+      var offer = req.body.offer
+    }
     const newProduct = new Product({
       productName: productName,
       description: description,
@@ -205,6 +212,7 @@ const deleteProduct = async (req, res) => {
 
 const loadEditProduct = async (req, res) => {
   try {
+    console.log(req.query.id);
     const id = req.query.id;
     const categories = await Category.find();
     const product = await Product.findOne({ _id: id }).populate("category");
@@ -219,6 +227,14 @@ const loadEditProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
   try {
+    if(!req.body.offer || req.body.offer == 0){
+      var offerPrice = 0
+      var offer = 0
+    } else {
+      var offerPrice = Math.round(req.body.price - (req.body.price * req.body.offer) / 100);
+
+      var offer = req.body.offer
+    }
     await Product.updateOne(
       { _id: req.body.id },
       {
@@ -226,6 +242,8 @@ const editProduct = async (req, res) => {
           productName: req.body.productName,
           category: req.body.category,
           price: req.body.price,
+          offer:offer,
+          offerPrice:offerPrice,
           description: req.body.description,
           quantity: req.body.quantity,
         },

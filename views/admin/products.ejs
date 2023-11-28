@@ -47,8 +47,13 @@ include('../partials/admin/sidepanel') %>
                     </td>
                     <td><%= item.quantity %></td>
                     <td><%= item.price %></td>
-                    <td style="color: blue;padding-left: 60px;"><%= item.offer %></td>
-                    <td style="color: blue;padding-left: 60px;"><%= item.offerPrice %></td>
+                    <td style="color: blue;padding-left: 60px;"><%= item.offer %>%</td>
+                    <% if(item.offerPrice){ %>
+                      <td style="color: blue;padding-left: 40px;"><%= item.offerPrice %></td>
+                    <% }else{ %>
+                      <td style="color: rgb(255, 0, 0);padding-left: 30px;">No offer</td>
+                    <% } %>
+                    
                     <td>
                       <a
                         href="/admin/products/edit-product?id=<%= item._id %>"

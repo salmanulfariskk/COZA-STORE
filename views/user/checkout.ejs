@@ -12,6 +12,7 @@
 									<th class="column-1">Product</th>
 									<th class="column-2"></th>
 									<th class="column-3">Price</th>
+									<th class="column-3">Offer Price</th>
 									<th class="column-3">Quantity</th>
 									<th class="column-3">Total</th>
 								</tr>
@@ -26,8 +27,18 @@
 											<td class="column-2">
 												<%= userData.cart[i].product.name %>
 											</td>
-											<td class="column-3">₹<%= userData.cart[i].product.price %>
-											</td>
+											<% if( userData.cart[i].product.offer){ %>
+
+											<td class="column-3"><s style="color: red;">₹<%= userData.cart[i].product.price %></s></td>
+											<% }else{ %>
+												<td class="column-3">₹<%= userData.cart[i].product.price %></td>   
+											<% } %>
+											<% if( userData.cart[i].product.offer){ %>
+
+											<td class="column-3"><%= userData.cart[i].product.offerPrice %></td>
+											<% }else{ %>
+												<td class="column-3"><small style="color: red;">No offer </small></td>   
+											<% } %>
 											<td class="column-3">
 												<%= userData.cart[i].quantity %>
 											</td>
