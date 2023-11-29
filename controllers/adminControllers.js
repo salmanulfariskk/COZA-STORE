@@ -185,28 +185,51 @@ const addProductPost = async (req, res) => {
   try {
     const imagesWithPath = req.body.images.map((img) => "/products/" + img);
     const { productName, category, quantity, description, price } = req.body;
-    const catOff = await Category.findById(category)
     
-    if(!req.body.offer){
-      var offer = 0
-      var offerPrice = 0
-    } else {
-      var offerPrice = Math.round(req.body.price - (req.body.price * req.body.offer) / 100);
-
-      var offer = req.body.offer
-    }
-    const newProduct = new Product({
-      productName: productName,
-      description: description,
-      quantity: quantity,
-      price: price,
-      offer: offer,
-      offerPrice:offerPrice,
-      category: category,
-      images: imagesWithPath,
-    });
-    await newProduct.save();
-    res.redirect("/admin/products/add-product");
+    const catOff = await Category.findById(category)
+    if(!catOff.offer){
+      if(!req.body.offer){
+        var offer = 0
+        var offerPrice = 0
+      } else {
+        var offerPrice = Math.round(req.body.price - (req.body.price * req.body.offer) / 100);
+  
+        var offer = req.body.offer
+      }
+      const newProduct = new Product({
+        productName: productName,
+        description: description,
+        quantity: quantity,
+        price: price,
+        offer: offer,
+        offerPrice:offerPrice,
+        category: category,
+        images: imagesWithPath,
+      });
+      await newProduct.save();
+      res.redirect("/admin/products/add-product");
+    }else{
+      if(catOff.offer<=0){
+        var offer = 0
+        var offerPrice = 0
+      } else {
+        var offerPrice = Math.round(req.body.price - (req.body.price * catOff.offer) / 100);
+  
+        var offer = catOff.offer
+      }
+      const newProduct = new Product({
+        productName: productName,
+        description: description,
+        quantity: quantity,
+        price: price,
+        offer: offer,
+        offerPrice:offerPrice,
+        category: category,
+        images: imagesWithPath,
+      });
+      await newProduct.save();
+      res.redirect("/admin/products/add-product");
+    } 
   } catch (error) {
     console.log(error.message);
   }
