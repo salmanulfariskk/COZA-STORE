@@ -23,7 +23,7 @@ generateSalt();
 const loadHome = async (req, res) => {
   try {
     const userId = req.session.user;
-    const products = await Product.find();
+    const products = await Product.find().populate('category')
     const user = isLoggedIn(req, res);
     // console.log(user);
     res.render("user/home", { isLoggedIn: user, commonError: "", products });

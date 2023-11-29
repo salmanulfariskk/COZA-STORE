@@ -106,7 +106,7 @@ const AddCategory = async (req, res) => {
         res.render("admin/add-category", { error: "Category already exists" });
         console.log(check);
       } else {
-        const category = await Category.create({ name: categoryName });
+        const category = await Category.create({ name: categoryName,offer:req.body.offer });
         if (category) {
           return res.render("admin/add-category", {
             success: "Category added successfully",
@@ -146,8 +146,19 @@ const deleteCategory = async (req, res) => {
 const postEditCategory = async (req, res) => {
   try {
     const catName = req.body.categoryName;
+    const catOff = req.body.offer
     const id = req.query.id;
-    await Category.updateOne({ _id: id }, { $set: { name: catName } });
+    var offerPrice = 0;
+    const pp = await Product.find({category:id})
+    console.log(`pp is : ${pp}`)
+    console.log(pp);
+    for(let i = 0 ; i < pp.length; i++) {
+      offerPrice = (Math.round(pp[i].price - (pp[i].price*req.body.offer)/100))
+      await Product.updateOne({category:id,productName:pp[i].productName},{$set:{offerPrice:offerPrice,offer:catOff}})
+    }
+  
+    const kk = Product.find({category:id})
+    await Category.updateOne({ _id: id }, { $set: { name: catName,offer:catOff } });
     res.redirect("/admin/category");
   } catch (error) {
     console.log(error.message);
@@ -226,7 +237,7 @@ const loadEditProduct = async (req, res) => {
 };
 
 const editProduct = async (req, res) => {
-  try {
+  try {  
     if(!req.body.offer || req.body.offer == 0){
       var offerPrice = 0
       var offer = 0

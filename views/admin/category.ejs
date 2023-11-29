@@ -32,7 +32,11 @@
                   <tr>
                     <td><%= i+1 %></td>
                     <td><%= item.name %></td>
-                    <td style="padding-left: 50px; color: blue;">50%</td>
+                    <% if(item.offer){ %>
+                      <td style="padding-left: 50px; color: blue;"><%= item.offer %>%</td>
+                    <% }else{ %>
+                      <td style="padding-left: 50px; color: rgb(255, 0, 0);">No offer</td>
+                    <% } %>
                     <td>
                       <a
                         href="/admin/category/edit-category?id=<%= item._id %>"
