@@ -185,7 +185,8 @@ const addProductPost = async (req, res) => {
   try {
     const imagesWithPath = req.body.images.map((img) => "/products/" + img);
     const { productName, category, quantity, description, price } = req.body;
-    console.log(typeof price);
+    const catOff = await Category.findById(category)
+    
     if(!req.body.offer){
       var offer = 0
       var offerPrice = 0
