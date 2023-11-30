@@ -79,5 +79,11 @@ router.post('/return-product',auth.isLogin,userControllers.requestReturnProduct)
 router.post('/resend-otp',userControllers.resendOTP)
 
 
+//Coupons
+router.get("/coupons", auth.isLogin, userControllers.getCoupons)
+
+router.post("/apply-coupon", auth.isLogin, userControllers.applyCoupon)
+
+
 
 module.exports = router;

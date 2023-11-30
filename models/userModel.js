@@ -52,6 +52,18 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    earnedCoupons: [
+        {
+            coupon: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Coupon',
+            },
+            isUsed: {
+                type: Boolean,
+                default: false,
+            },
+        }
+    ],
     password: {
         required: true,
         type: String,

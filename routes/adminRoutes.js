@@ -44,6 +44,11 @@ router.post("/cancel-requests", auth.adminLogin, adminControllers.returnCancelAc
 router.get('/sales-report',auth.adminLogin,adminControllers.loadSalesReport)
 router.post('/sales-report',auth.adminLogin,adminControllers.loadSalesReport)
 
+//coupons
+router.get("/coupons",auth.adminLogin,adminControllers.loadCoupons)
+router.get("/new-coupon",auth.adminLogin,adminControllers.getAddNewCoupon)
+router.post("/new-coupon",auth.adminLogin,adminControllers.addNewCoupon)
+router.patch("/coupons/action/:id",auth.adminLogin,adminControllers.couponAction)
 
 // router.get("/", checkAuth, getDashboard);
 // router.route("/login").get(isLoggedIn, getLogin).post(loginAdmin);

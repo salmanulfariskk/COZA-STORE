@@ -22,6 +22,7 @@
                       <form action="/profile/editPhoto?_method=PATCH" method="post" enctype="multipart/form-data">
                         <input type="file" accept="image/*" name="image" class="form-control file-upload-info" placeholder="Upload Image" id="preview-input" />
                         <button type="submit" class="btn btn-primary profile-button" style="margin-top: 15px;">Update profile</button><br>
+                        <a href="/logout" class="mt-2 btn btn-danger profile-button" id="logout-button">Logout</a> <!-- Logout button -->
                       </form>
                       <% if(typeof error !== "undefined"){ %>
                       <div style="margin-top: 8px;">
@@ -41,12 +42,9 @@
                   <!-- Add other user information here -->
                   <div style="margin-top: 10px;">
                     <a href="/edit-profile?id=<%= userProfile._id %>" class="btn btn-outline-primary profile-button" id="edit-profile-button">Edit Profile</a>
-                    <a href="/logout" class="btn btn-danger profile-button" id="logout-button">Logout</a> <!-- Logout button -->
-                  </div>
-                  <div style="margin-top: 10px;">
                     <a href="/order" class="btn btn-dark profile-button" id="edit-profile-button">My Orders</a>
-                    <!-- <a href="/wallet" class="btn btn-info profile-button" id="edit-profile-button">My Wallet</a>
-                    <a href="/coupons" class="btn btn-secondary profile-button" id="edit-profile-button">Coupons</a> -->
+                    <!-- <a href="/wallet" class="btn btn-info profile-button" id="edit-profile-button">My Wallet</a> -->
+                    <a href="/coupons" class="btn btn-secondary profile-button" id="edit-profile-button">Coupons</a>
                   </div>
                   <section class="bg-light p-4" style="margin-top: 20px;">
                     <h2 class="mb-4">Addresses</h2>

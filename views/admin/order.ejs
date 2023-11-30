@@ -55,7 +55,7 @@
                 </td>
                 <td>
                   <% for ( let j = 0; j < orders[i].products.length; j++ ) { %>
-                  <%= orders[i].products[j].product.productName%> : <%= orders[i].products[j].quantity %><br />
+                  <%= orders[i].products[j].product?.productName%> : <%= orders[i].products[j].quantity %><br />
                   <% } %>
                 </td>
                 <td>

@@ -9,6 +9,7 @@ const path = require("path");
 const User = require("../models/userModel");
 const Return = require("../models/returnProductModel");
 const Cancel = require("../models/cancelProductModel");
+const Coupon = require("../models/couponModel");
 
 const adminLogin = async (req, res) => {
   res.render("admin/login");
@@ -106,7 +107,10 @@ const AddCategory = async (req, res) => {
         res.render("admin/add-category", { error: "Category already exists" });
         console.log(check);
       } else {
-        const category = await Category.create({ name: categoryName,offer:req.body.offer });
+        const category = await Category.create({
+          name: categoryName,
+          offer: req.body.offer,
+        });
         if (category) {
           return res.render("admin/add-category", {
             success: "Category added successfully",
@@ -146,19 +150,27 @@ const deleteCategory = async (req, res) => {
 const postEditCategory = async (req, res) => {
   try {
     const catName = req.body.categoryName;
-    const catOff = req.body.offer
+    const catOff = req.body.offer || 0;
     const id = req.query.id;
     var offerPrice = 0;
-    const pp = await Product.find({category:id})
-    console.log(`pp is : ${pp}`)
+    const pp = await Product.find({ category: id });
+    console.log(`pp is : ${pp}`);
     console.log(pp);
-    for(let i = 0 ; i < pp.length; i++) {
-      offerPrice = (Math.round(pp[i].price - (pp[i].price*req.body.offer)/100))
-      await Product.updateOne({category:id,productName:pp[i].productName},{$set:{offerPrice:offerPrice,offer:catOff}})
+    for (let i = 0; i < pp.length; i++) {
+      offerPrice = Math.round(
+        pp[i].price - (pp[i].price * req.body.offer) / 100
+      );
+      await Product.updateOne(
+        { category: id, productName: pp[i].productName },
+        { $set: { offerPrice: offerPrice, offer: catOff } }
+      );
     }
-  
-    const kk = Product.find({category:id})
-    await Category.updateOne({ _id: id }, { $set: { name: catName,offer:catOff } });
+
+    const kk = Product.find({ category: id });
+    await Category.updateOne(
+      { _id: id },
+      { $set: { name: catName, offer: catOff } }
+    );
     res.redirect("/admin/category");
   } catch (error) {
     console.log(error.message);
@@ -185,16 +197,18 @@ const addProductPost = async (req, res) => {
   try {
     const imagesWithPath = req.body.images.map((img) => "/products/" + img);
     const { productName, category, quantity, description, price } = req.body;
-    
-    const catOff = await Category.findById(category)
-    if(!catOff.offer){
-      if(!req.body.offer){
-        var offer = 0
-        var offerPrice = 0
+
+    const catOff = await Category.findById(category);
+    if (!catOff.offer) {
+      if (!req.body.offer) {
+        var offer = 0;
+        var offerPrice = 0;
       } else {
-        var offerPrice = Math.round(req.body.price - (req.body.price * req.body.offer) / 100);
-  
-        var offer = req.body.offer
+        var offerPrice = Math.round(
+          req.body.price - (req.body.price * req.body.offer) / 100
+        );
+
+        var offer = req.body.offer;
       }
       const newProduct = new Product({
         productName: productName,
@@ -202,20 +216,22 @@ const addProductPost = async (req, res) => {
         quantity: quantity,
         price: price,
         offer: offer,
-        offerPrice:offerPrice,
+        offerPrice: offerPrice,
         category: category,
         images: imagesWithPath,
       });
       await newProduct.save();
       res.redirect("/admin/products/add-product");
-    }else{
-      if(catOff.offer<=0){
-        var offer = 0
-        var offerPrice = 0
+    } else {
+      if (catOff.offer <= 0) {
+        var offer = 0;
+        var offerPrice = 0;
       } else {
-        var offerPrice = Math.round(req.body.price - (req.body.price * catOff.offer) / 100);
-  
-        var offer = catOff.offer
+        var offerPrice = Math.round(
+          req.body.price - (req.body.price * catOff.offer) / 100
+        );
+
+        var offer = catOff.offer;
       }
       const newProduct = new Product({
         productName: productName,
@@ -223,13 +239,13 @@ const addProductPost = async (req, res) => {
         quantity: quantity,
         price: price,
         offer: offer,
-        offerPrice:offerPrice,
+        offerPrice: offerPrice,
         category: category,
         images: imagesWithPath,
       });
       await newProduct.save();
       res.redirect("/admin/products/add-product");
-    } 
+    }
   } catch (error) {
     console.log(error.message);
   }
@@ -261,15 +277,23 @@ const loadEditProduct = async (req, res) => {
 };
 
 const editProduct = async (req, res) => {
-  try {  
-    if(!req.body.offer || req.body.offer == 0){
-      var offerPrice = 0
-      var offer = 0
-    } else {
-      var offerPrice = Math.round(req.body.price - (req.body.price * req.body.offer) / 100);
+  try {
+    const category = await Category.findById(req.body.category);
+    const catOff = category.offer || 0;
+    let currOffer = req.body.offer || 0;
 
-      var offer = req.body.offer
+    let newOffer;
+    if (catOff > currOffer) {
+      newOffer = catOff;
+    } else {
+      newOffer = currOffer;
     }
+
+    var offerPrice = Math.round(
+      req.body.price - (req.body.price * newOffer) / 100
+    );
+    var offer = newOffer || 0;
+
     await Product.updateOne(
       { _id: req.body.id },
       {
@@ -277,16 +301,17 @@ const editProduct = async (req, res) => {
           productName: req.body.productName,
           category: req.body.category,
           price: req.body.price,
-          offer:offer,
-          offerPrice:offerPrice,
+          offer: offer,
+          offerPrice: offerPrice,
           description: req.body.description,
           quantity: req.body.quantity,
         },
       }
     );
+
     res.redirect("/admin/products");
   } catch (error) {
-    console.log(error.message);
+    console.log.error(error.message);
   }
 };
 
@@ -374,6 +399,20 @@ const updateActionOrder = async (req, res) => {
     const orderData = await Order.findById(req.query.orderId);
     const userData = await User.findById(orderData.user);
 
+    const foundCoupon = await Coupon.findOne({
+      isActive: true,
+      minimumPurchaseAmount: { $lte: orderData.totalAmount },
+    }).sort({ minimumPurchaseAmount: -1 });
+
+    if (foundCoupon) {
+      const couponExists = userData.earnedCoupons.some((coupon) =>
+        coupon.coupon.equals(foundCoupon._id)
+      );
+      if (!couponExists) {
+        userData.earnedCoupons.push({ coupon: foundCoupon._id });
+      }
+    }
+    await userData.save();
     await Order.updateOne(
       { _id: req.query.orderId },
       { status: req.query.action }
@@ -495,7 +534,7 @@ const returnCancelAction = async (req, res) => {
     } else {
       if (foundOrders.paymentMethod !== "Cash on delivery") {
         const currentUser = await User.findById(foundCancel.user._id);
-        console.log(currentUser); 
+        console.log(currentUser);
 
         if (currentUser) {
           // Check if currentUser is defined
@@ -823,6 +862,128 @@ const loadSalesReport = async (req, res) => {
   }
 };
 
+//coupons
+
+const loadCoupons = async (req, res) => {
+  try {
+    // pagination
+    const page = req.query.page || 1;
+    const pageSize = 8;
+    const skip = (page - 1) * pageSize;
+    const totalCoupons = await Coupon.countDocuments();
+    const totalPages = Math.ceil(totalCoupons / pageSize);
+
+    let foundCoupons;
+
+    if (req.query.search) {
+      foundCoupons = await Coupon.find({
+        isActive: req.body.searchQuery === "1" ? true : false,
+      });
+      return res.status(200).json({
+        couponDatas: foundCoupons,
+      });
+    } else {
+      foundCoupons = await Coupon.find().skip(skip).limit(pageSize);
+      res.render("admin/coupons", {
+        activePage: "coupon",
+        foundCoupons,
+        filtered: req.query.search ? true : false,
+        currentPage: page || 1,
+        totalPages: totalPages || 1,
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const getAddNewCoupon = (req, res) => {
+  try {
+    res.render("admin/newCoupon", { activePage: "coupon", error: "" });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+function generateCouponCode() {
+  const codeRegex = /^[A-Z0-9]{5,15}$/;
+  let code = "";
+  while (!codeRegex.test(code)) {
+    code = Math.random().toString(36).substring(7);
+  }
+  return Coupon.findOne({ code }).then((existingCoupon) => {
+    if (existingCoupon) {
+      return generateCouponCode();
+    }
+    return code;
+  });
+}
+
+const addNewCoupon = async (req, res, next) => {
+  try {
+    const {
+      description,
+      discountType,
+      discountAmount,
+      minimumPurchaseAmount,
+      usageLimit,
+    } = req.body;
+    if (
+      !description ||
+      !discountType ||
+      !discountAmount ||
+      !minimumPurchaseAmount ||
+      !usageLimit
+    ) {
+      res.render("admin/newCoupon", {
+        activePage: "coupon",
+        error: "All fields are required",
+      });
+    } else {
+      if (discountType === "percentage" && discountAmount > 100) {
+        return res.render("admin/newCoupon", {
+          activePage: "coupon",
+          error: "Discount percentage is greater than 100",
+        });
+      }
+
+      if (description.length < 4 || description.length > 100) {
+        return res.render("admin/newCoupon", {
+          activePage: "coupon",
+          error: "Description must be between 4 and 100 characters",
+        });
+      } else {
+        const uniqueCode = await generateCouponCode();
+        const newCoupon = new Coupon({
+          code: uniqueCode,
+          discountType,
+          description,
+          discountAmount,
+          minimumPurchaseAmount,
+          usageLimit,
+        });
+
+        await newCoupon.save();
+
+        res.redirect("/admin/coupons");
+      }
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const couponAction = async (req, res, next) => {
+  try {
+    const state = req.body.state === "";
+    const couponId = req.params.id;
+    await Coupon.findByIdAndUpdate(couponId, { $set: { isActive: state } });
+    res.redirect("/admin/coupons");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 module.exports = {
   adminLogin,
   adminSession,
@@ -852,4 +1013,8 @@ module.exports = {
   getCancelRequests,
   returnCancelAction,
   loadSalesReport,
+  loadCoupons,
+  getAddNewCoupon,
+  addNewCoupon,
+  couponAction,
 };

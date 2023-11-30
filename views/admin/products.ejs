@@ -48,7 +48,7 @@ include('../partials/admin/sidepanel') %>
                     <td><%= item.quantity %></td>
                     <td><%= item.price %></td>
                     <td style="color: blue;padding-left: 60px;"><%= item.offer %>%</td>
-                    <% if(item.offerPrice){ %>
+                    <% if(item.offerPrice && item.offer > 0){ %>
                       <td style="color: blue;padding-left: 40px;"><%= item.offerPrice %></td>
                     <% }else{ %>
                       <td style="color: rgb(255, 0, 0);padding-left: 30px;">No offer</td>

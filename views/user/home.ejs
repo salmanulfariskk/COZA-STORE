@@ -506,7 +506,7 @@
             <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
                 <!-- Block2 -->
                 <div class="block2">
-                      <% if (products[i].offer!==null&&products[i].offerPrice>0) { %>
+                      <% if (products[i].offer!==null&&products[i].offer!==0&&products[i].offerPrice>0) { %>
                               <div class="image-badge">
                                 <p><%= products[i].offer %>% off</p>
                               </div>
@@ -523,7 +523,7 @@
                             </a>
 
                             <span class="stext-105 cl3">
-                                <% if(products[i].offer!==null&&products[i].offerPrice>0){ %>
+                                <% if(products[i].offer!==null&&products[i].offer!==0&&products[i].offerPrice>0){ %>
 
                                <s style="color: #fa4251">$<%= products[i].price %></s> $<%= products[i].offerPrice %>
                             

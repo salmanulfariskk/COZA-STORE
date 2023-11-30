@@ -1,7 +1,15 @@
+const User = require("../models/userModel");
+
 const isLogin = async (req, res, next) => {
   try {
     if (req.session.user) {
-      next();
+      const user = await User.findById(req.session.user);
+      if (user.blocked) {
+        req.session.user = null;
+        res.redirect("/login");
+      } else {
+        next();
+      }
     } else {
       res.redirect("/login");
     }
