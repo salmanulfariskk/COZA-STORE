@@ -208,18 +208,25 @@
 })
     .then(response => response.json())
     .then(data => {
-        if (data.productExists) {
-            // Product exists, proceed to checkout
-            window.location.href = '/checkout';
-        } else {
-            // Product does not exist, show SweetAlert message
-            Swal.fire({
-                title: 'Product Unavailable',
-                text: 'One or more products in your cart are not available. Please remove them and try again.',
-                icon: 'error',
-            });
-        }
-    })
+    if (data.productExists) {
+        // Product exists, proceed to checkout
+        window.location.href = '/checkout';
+    } else {
+        // Product does not exist, show SweetAlert message
+        Swal.fire({
+            title: 'Product Unavailable',
+            text: 'One or more products in your cart are not available. Do you want to update your cart?',
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonText: 'Update Cart',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // User clicked "Update Cart", you can reload the page
+                location.reload();
+            }
+        });
+    }
+})
     .catch(error => {
         console.error('Error:', error);
         // Handle error, show an alert, etc.
