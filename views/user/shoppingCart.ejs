@@ -15,7 +15,7 @@
     
 
 <!-- Shoping Cart -->
-<form class="bg0 p-t-75 p-b-85">
+<form class="bg0 p-t-75 p-b-85" >
     <div class="container">
         <div class="row">
             <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
@@ -32,8 +32,8 @@
                             </tr>
                             <% if(userData.cart.length>0){ %>
                             <% for(let i=0;i<userData.cart.length;i++){ %>
-                            <tr class="table_row">
-                                <td class="column-1">
+                                <tr class="table_row" data-product-id="<%= userData.cart[i].product._id %>">
+                                    <td class="column-1">
                                     <a href="/deleteItem?cartId=<%= userData.cart[i]._id %>">
                                         <div class="how-itemcart1">
                                            <img src="<%= userData.cart[i].product.images[0] %>" alt="IMG">
@@ -140,7 +140,7 @@
                     </div>
 
                     <% if (userData.cart.length > 0) { %>
-                        <a href="/checkout" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
+                        <a href="/checkout" id ="checkoutButton" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
                           Proceed to Checkout
                         </a>
                     <% } %>
@@ -157,7 +157,86 @@
     }
 </script>
 <!-- cart -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
+    // Function to handle checkout button click
+    function checkoutButton(event) {
+        // Prevent the default form submission
+        event.preventDefault();
+
+        // Get all products
+        const products = document.querySelectorAll('.table_row');
+
+        // Check if the cart is empty
+        if (products.length === 0) {
+            Swal.fire({
+                title: 'Empty Cart',
+                text: 'Your cart is empty. Please add items to proceed.',
+                icon: 'info',
+            });
+            return;
+        }
+
+        // Initialize an array to store product data
+        const productData = [];
+
+        // Iterate over each product
+        products.forEach((product) => {
+            // Get product ID from data attribute
+            const productId = product.getAttribute('data-product-id');
+
+            // Get quantity from input field
+            const quantity = product.querySelector('.num-product').value;
+
+            // Add product data to the array
+            productData.push({ productId, quantity });
+        });
+
+        // Log productData for testing
+        console.log(productData);
+
+        // Perform any additional logic or send the data to the server
+        // For example, you can send an AJAX request to your backend
+        // and handle the response accordingly (e.g., redirect to /checkout).
+        // Example using fetch:
+        fetch('/checkIfProductExists', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ productData }),
+})
+    .then(response => response.json())
+    .then(data => {
+        if (data.productExists) {
+            // Product exists, proceed to checkout
+            window.location.href = '/checkout';
+        } else {
+            // Product does not exist, show SweetAlert message
+            Swal.fire({
+                title: 'Product Unavailable',
+                text: 'One or more products in your cart are not available. Please remove them and try again.',
+                icon: 'error',
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Handle error, show an alert, etc.
+    });
+
+    }
+
+    // Event listener for checkout button click
+    document.getElementById('checkoutButton').addEventListener('click', function (event) {
+        checkoutButton(event);
+    });
+</script>
+
+
+
+<script>
+
     function updateCartItem(cartItemId, incOrDec,Cart) {
         
         const data = {

@@ -690,78 +690,24 @@ const deleteAddress = async (req, res) => {
 };
 
 //checkout
-// const loadCheckout = async (req, res) => {
-//   try {
-//     const userData = await User.findById(req.session.user).populate(
-//       "cart.product"
-//     );
-//     const selectAddress = await Address.findOne({
-//       userId: req.session.user,
-//       default: true,
-//     });
-//     const allAddress = await Address.find({
-//       userId: req.session.user,
-//       default: false,
-//     });
-//     let errorMessage = "";
-//     if (req.query.error) {
-//       errorMessage = req.query.error;
-//     }
-//     res.render("user/checkout", {
-//       isLoggedIn,
-//       userData,
-//       selectAddress,
-//       allAddress,
-//       discount: 0,
-//       couponError: false,
-//       balance: false,
-//       currentCoupon: false,
-//       errorMessage,
-//     });
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
 
 const loadCheckout = async (req, res) => {
   try {
-    const userId = req.session.user;
-
-    // Fetch user data with populated cart
-    const userData = await User.findById(userId).populate("cart.product");
-
-    // Filter out any cart items where the associated product is null or not found in the database
-    userData.cart = userData.cart.filter(async (cartItem) => {
-      // Check if cartItem.product is not null before accessing its _id property
-      if (cartItem.product && cartItem.product._id) {
-        const productExists = await Product.exists({ _id: cartItem.product._id });
-        return productExists;
-      }
-      return false;
-    });
-
-    // Update totalCartAmount based on the remaining cart items
-    userData.totalCartAmount = userData.cart.reduce(
-      (total, cartItem) => total + cartItem.total,
-      0
+    const userData = await User.findById(req.session.user).populate(
+      "cart.product"
     );
-
-    // Fetch user's addresses
     const selectAddress = await Address.findOne({
-      userId,
+      userId: req.session.user,
       default: true,
     });
     const allAddress = await Address.find({
-      userId,
+      userId: req.session.user,
       default: false,
     });
-
     let errorMessage = "";
     if (req.query.error) {
       errorMessage = req.query.error;
     }
-
-    // Render the checkout page with the updated user data
     res.render("user/checkout", {
       isLoggedIn,
       userData,
@@ -775,13 +721,8 @@ const loadCheckout = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(500).send("Internal Server Error");
   }
 };
-
-
-
-
 
 const loadEditAddressCheckout = async (req, res) => {
   try {

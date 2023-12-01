@@ -1,4 +1,4 @@
-    <%- include('../partials/user/header') %>
+<%- include('../partials/user/header') %>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 	<div class="bg0 p-t-75 p-b-85">
 		<div class="container">
@@ -233,13 +233,10 @@
 								Order product
 							</button>
 							<% }else{ %>
-								<a style=" display: inline-block;
-								padding: 10px 20px;
-								text-decoration: none;
-								background-color: #ffc107;
-								color: rgb(25, 25, 25);
-								border: 1px solid #ffc107;
-								border-radius: 15px;" href="/shop" class="button">Your Cart is empty !! Please Order</a>
+								<div class="text-center my-4">
+									<p class="text-danger">Your Cart is empty!! Please Order.</p>
+									<a href="/shop" class="btn btn-primary">Shop Now</a>
+								</div>
 							<% } %>
 
 						

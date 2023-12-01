@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userControllers = require("../controllers/userControllers");
+const Product = require("../models/productModel");
 
 const auth = require('../middlewares/auth')
 
@@ -29,6 +30,26 @@ router.get('/addToCart', auth.isLogin,userControllers.addToCart)
 router.get('/shoppingCart', auth.isLogin,userControllers.loadShoppingCart)
 router.post("/update-cart/:id", auth.isLogin,userControllers.updateCart)
 router.get('/deleteItem',auth.isLogin,userControllers.deleteItemFromCart)
+router.post('/checkIfProductExists', async (req, res) => {
+    console.log(req.body);
+
+    try {
+        for (const element of req.body.productData) {
+            console.log(element.productId);
+            const productIsThere = await Product.findById(element.productId);
+            if (!productIsThere) {
+                res.status(404).json({ productExists: false });
+                return;
+            }
+        }
+
+        res.status(200).json({ productExists: true });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 //profile
 router.get('/profile',auth.isLogin,userControllers.loadProfile)
