@@ -321,22 +321,51 @@ const checkOtp = async (req, res) => {
   }
 };
 //cart
+
+// const loadShoppingCart = async (req, res) => {
+//   try {
+//     const userData = await User.findById(req.session.user).populate(
+//       "cart.product"
+//     );
+
+//     res.render("user/shoppingCart", {
+//       isLoggedIn,
+//       user: req.session.user,
+//       userData,
+//     });
+//   } catch (error) {
+//     console.log("here");
+//     console.log(error);
+//     console.log("here");
+//   }
+// };
+
 const loadShoppingCart = async (req, res) => {
   try {
-    const userData = await User.findById(req.session.user).populate(
-      "cart.product"
-    );
+    const user = await User.findById(req.session.user).populate("cart.product");
+
+    // Filter out any cart items where the associated product is null
+    user.cart = user.cart.filter(cartItem => cartItem.product !== null);
+
+    // Calculate the totalCartAmount based on the valid products in the cart
+    user.totalCartAmount = user.cart.reduce((total, cartItem) => {
+      return total + (cartItem.total || 0);
+    }, 0);
+
+    // Save the updated cart to the database
+    await user.save();
+
     res.render("user/shoppingCart", {
       isLoggedIn,
       user: req.session.user,
-      userData,
+      userData: user,
     });
   } catch (error) {
-    console.log("here");
-    console.log(error);
-    console.log("here");
+    console.log("Error loading shopping cart:", error);
+    res.status(500).send("Internal Server Error");
   }
 };
+
 
 const addToCart = async (req, res) => {
   try {
@@ -661,23 +690,78 @@ const deleteAddress = async (req, res) => {
 };
 
 //checkout
+// const loadCheckout = async (req, res) => {
+//   try {
+//     const userData = await User.findById(req.session.user).populate(
+//       "cart.product"
+//     );
+//     const selectAddress = await Address.findOne({
+//       userId: req.session.user,
+//       default: true,
+//     });
+//     const allAddress = await Address.find({
+//       userId: req.session.user,
+//       default: false,
+//     });
+//     let errorMessage = "";
+//     if (req.query.error) {
+//       errorMessage = req.query.error;
+//     }
+//     res.render("user/checkout", {
+//       isLoggedIn,
+//       userData,
+//       selectAddress,
+//       allAddress,
+//       discount: 0,
+//       couponError: false,
+//       balance: false,
+//       currentCoupon: false,
+//       errorMessage,
+//     });
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
+
 const loadCheckout = async (req, res) => {
   try {
-    const userData = await User.findById(req.session.user).populate(
-      "cart.product"
+    const userId = req.session.user;
+
+    // Fetch user data with populated cart
+    const userData = await User.findById(userId).populate("cart.product");
+
+    // Filter out any cart items where the associated product is null or not found in the database
+    userData.cart = userData.cart.filter(async (cartItem) => {
+      // Check if cartItem.product is not null before accessing its _id property
+      if (cartItem.product && cartItem.product._id) {
+        const productExists = await Product.exists({ _id: cartItem.product._id });
+        return productExists;
+      }
+      return false;
+    });
+
+    // Update totalCartAmount based on the remaining cart items
+    userData.totalCartAmount = userData.cart.reduce(
+      (total, cartItem) => total + cartItem.total,
+      0
     );
+
+    // Fetch user's addresses
     const selectAddress = await Address.findOne({
-      userId: req.session.user,
+      userId,
       default: true,
     });
     const allAddress = await Address.find({
-      userId: req.session.user,
+      userId,
       default: false,
     });
+
     let errorMessage = "";
     if (req.query.error) {
       errorMessage = req.query.error;
     }
+
+    // Render the checkout page with the updated user data
     res.render("user/checkout", {
       isLoggedIn,
       userData,
@@ -691,8 +775,13 @@ const loadCheckout = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+    res.status(500).send("Internal Server Error");
   }
 };
+
+
+
+
 
 const loadEditAddressCheckout = async (req, res) => {
   try {

@@ -191,6 +191,7 @@
 								<%= errorMessage %>
 							</div>
 						<% } %>
+						<% if(userData.totalCartAmount>0){ %>
 						<div class="row col-lg-12 my-4">
 							<form action="/apply-coupon" method="post" id="checkout-form">
 							  <div>
@@ -228,10 +229,18 @@
 							<input type="hidden"  name="discount" value="<%= discount %>">
 							<input type="hidden" name="currentCoupon" value="<%= currentCoupon %>">
 							<input type="hidden" name="totalAmount" value="<%= userData.totalCartAmount - discount %>">
-	
 							<button type="submit" id="placeOrderBtn" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
 								Order product
 							</button>
+							<% }else{ %>
+								<a style=" display: inline-block;
+								padding: 10px 20px;
+								text-decoration: none;
+								background-color: #ffc107;
+								color: rgb(25, 25, 25);
+								border: 1px solid #ffc107;
+								border-radius: 15px;" href="/shop" class="button">Your Cart is empty !! Please Order</a>
+							<% } %>
 
 						
 						</form>
