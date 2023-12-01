@@ -17,7 +17,7 @@
           <%= order.orderedProducts[0].productName %>
         </span>
         <p>
-          Price: ₹<%= order.products.total %>,
+          Price: ₹<%= order.totalAmount %>,
           Quantity: <%= order.products.quantity %>,<br>
           Payment Method: <%= order.paymentMethod %><br>
           Delivery Address: <%= order.deliveryAddress.city %>,

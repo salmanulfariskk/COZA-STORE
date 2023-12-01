@@ -88,7 +88,7 @@
 
 	<!-- Product Detail -->
 	<section class="sec-product-detail bg0 p-t-65 p-b-60 mt-3">
-		<div class="container">
+		<div class="container mt-5">
 			<div class="row">
 				<div class="col-md-6 col-lg-7 p-b-30">
 					<div class="p-l-25 p-r-30 p-lr-0-lg">
@@ -115,7 +115,7 @@
 						<h4 class="mtext-105 cl2 js-name-detail p-b-14">
 							<%= product.productName %>
 						</h4>
-						<% if(product.offer!==null&&product.offerPrice>0){ %>
+						<% if(product.offer!==null&&product.offer!==0&&product.offerPrice>0){ %>
 						<span class="mtext-106 cl2">
 							<s style="color: red;">$<%= product.price %></s> $<%= product.offerPrice %>
 						</span>
