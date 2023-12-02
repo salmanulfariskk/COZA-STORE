@@ -104,8 +104,15 @@ const getSignUp = async (req, res) => {
 
 const signUp = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, password, confirmPassword } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      password,
+      confirmPassword,
+      referralCode,
+    } = req.body;
     if (
       firstName &&
       lastName &&
@@ -114,6 +121,7 @@ const signUp = async (req, res) => {
       password &&
       confirmPassword
     ) {
+      const code = referralCode.trim();
       const foundUser = await User.findOne({ email: email });
 
       if (foundUser) {
@@ -132,6 +140,29 @@ const signUp = async (req, res) => {
             phone: phone,
             password: hashPassword,
           });
+
+          if (code !== "") {
+            const referdUser = await User.findOne({ referralCode: code });
+            if (referdUser) {
+              const transactionData = {
+                amount: 20,
+                description: `${
+                  referdUser.firstName
+                } user reffered you ${20} credited youre wallet`,
+              };
+              referdUser.wallet = 20;
+              const transactionData1 = {
+                amount: 100,
+                description: `${
+                  newUser.firstName
+                } is joined using for your referral code  amount ${20} credited youre wallet  `,
+              };
+              newUser.wallet = 100;
+              referdUser.walletHistory.push(transactionData1);
+              await referdUser.save();
+              newUser.walletHistory.push(transactionData);
+            }
+          }
 
           await newUser.save();
 
@@ -345,7 +376,7 @@ const loadShoppingCart = async (req, res) => {
     const user = await User.findById(req.session.user).populate("cart.product");
 
     // Filter out any cart items where the associated product is null
-    user.cart = user.cart.filter(cartItem => cartItem.product !== null);
+    user.cart = user.cart.filter((cartItem) => cartItem.product !== null);
 
     // Calculate the totalCartAmount based on the valid products in the cart
     user.totalCartAmount = user.cart.reduce((total, cartItem) => {
@@ -365,7 +396,6 @@ const loadShoppingCart = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 
 const addToCart = async (req, res) => {
   try {
@@ -873,7 +903,6 @@ const orderProduct = async (req, res) => {
     const selectedPaymentOptions = req.body.paymentOptions;
     const discount = req.body.discount || 0;
 
-    
     if (selectedPaymentOptions && selectedPaymentOptions !== undefined) {
       const userData = await User.findById(req.session.user).populate(
         "cart.product"
@@ -914,14 +943,14 @@ const orderProduct = async (req, res) => {
       if (selectedPaymentOptions === "Cash on delivery") {
         await order.save();
       } else if (selectedPaymentOptions === "Razorpay") {
-        console.log("i am in razhorpay")
-        console.log(userData)
+        console.log("i am in razhorpay");
+        console.log(userData);
         let amountUserHasToPay = 0;
-        if(discount){
+        if (discount) {
           console.log(`Disccount amout is ${discount}`);
-          amountUserHasToPay = (userData.totalCartAmount - discount) * 100
-        }else{
-          amountUserHasToPay = (userData.totalCartAmount) * 100
+          amountUserHasToPay = (userData.totalCartAmount - discount) * 100;
+        } else {
+          amountUserHasToPay = userData.totalCartAmount * 100;
         }
         // Create a Razorpay order
         const razorpayOrder = await razorpay.orders.create({
@@ -931,7 +960,7 @@ const orderProduct = async (req, res) => {
             .toString()
             .padStart(4, "0")}${Date.now()}`, // Provide a unique receipt ID
         });
-        console.log("i am in razhorpay 2")
+        console.log("i am in razhorpay 2");
 
         // Save the order details to your database
         order.razorpayOrderId = razorpayOrder.id;
@@ -944,7 +973,7 @@ const orderProduct = async (req, res) => {
           user: userData,
         });
       } else {
-        console.log("i am in razhorpay 3")
+        console.log("i am in razhorpay 3");
 
         if (userData.wallet.balance < userData.totalCartAmount) {
           const errorMessage = "Insufficient wallet balance";
@@ -1010,7 +1039,7 @@ const orderProduct = async (req, res) => {
         userData.cart = [];
         userData.totalCartAmount = 0;
       }
-      console.log("trying to find current coupon")
+      console.log("trying to find current coupon");
       const currentUsedCoupon = await userData.earnedCoupons.find((coupon) =>
         coupon.coupon.equals(req.body.currentCoupon)
       );
@@ -1033,7 +1062,7 @@ const orderProduct = async (req, res) => {
 };
 const saveRzpOrder = async (req, res) => {
   try {
-    console.log("I am in save order")
+    console.log("I am in save order");
     const { transactionId, orderId, signature } = req.body;
     const amount = parseInt(req.body.amount / 100);
     const currentUser = await User.findById(req.session.user).populate(
@@ -1591,6 +1620,34 @@ const applyCoupon = async (req, res) => {
   }
 };
 
+const generateCode = async (req, res) => {
+  try {
+    const length = 10;
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let randomCode = "";
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      randomCode += characters.charAt(randomIndex);
+    }
+
+    const findUser = await User.findByIdAndUpdate(req.session.user, {
+      referralCode: randomCode,
+    });
+    if (findUser) {
+      return res.redirect("/profile");
+    } else {
+      return res.redirect("/login");
+    }
+
+    // Redirect with randomCode as a query parameter
+    // res.redirect('/profile?randomCode=' + encodeURIComponent(randomCode));
+  } catch (error) {
+    +console.log(error.message);
+  }
+};
+
 module.exports = {
   loadHome,
   loadShop,
@@ -1642,4 +1699,5 @@ module.exports = {
   loadContact,
   getCoupons,
   applyCoupon,
+  generateCode,
 };

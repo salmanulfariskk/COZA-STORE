@@ -105,6 +105,9 @@ router.get("/coupons", auth.isLogin, userControllers.getCoupons)
 
 router.post("/apply-coupon", auth.isLogin, userControllers.applyCoupon)
 
+//referral
+router.post("/generateReferralCode",auth.isLogin,userControllers.generateCode)
+
 
 
 module.exports = router;

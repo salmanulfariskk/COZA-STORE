@@ -13,6 +13,10 @@ const adminSchema = new mongoose.Schema({
     name:{
         required: true,
         type: String,
+    },
+    referralAmount:{
+        type: Number,
+        default: 0,
     }
 })
 

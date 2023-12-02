@@ -8,7 +8,8 @@ const session = require('express-session');
 const Connection = require("./database/db");
 const nocache = require("nocache");
 const morgan = require('morgan')
-const Razorpay = require('razorpay')
+const Razorpay = require('razorpay');
+const { isLogin } = require("./middlewares/auth");
 
 const app = express();
 app.use(methodOverride("_method"))
@@ -34,6 +35,9 @@ app.use(
 
 app.use("/", userRoute);
 app.use("/admin", adminRoute)
+app.get('/salman',(req, res) =>{
+  res.render('admin/referral',{isLoggedIn:true,currentUser:true,balance:true})
+})
 
 Connection();
 

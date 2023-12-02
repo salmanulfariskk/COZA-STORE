@@ -10,6 +10,7 @@ const User = require("../models/userModel");
 const Return = require("../models/returnProductModel");
 const Cancel = require("../models/cancelProductModel");
 const Coupon = require("../models/couponModel");
+const Referral = require("../models/referrelModel")
 
 const adminLogin = async (req, res) => {
   res.render("admin/login");
@@ -984,6 +985,28 @@ const couponAction = async (req, res, next) => {
   }
 };
 
+//referral  
+const loadReferral = async (req, res) => {
+  try {
+    const admin = await Admin.findOne({ email: req.session.admin });
+    res.render("admin/referral",{admin});
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const addReferral = async (req,res) => {
+  try {
+    const {referralAmount} = req.body
+    
+    await Admin.updateOne({email: req.session.admin},{ $set: { referralAmount: referralAmount } })
+
+    res.redirect("/admin/referral")
+  }catch (error){
+    console.log(error.message);
+  }
+}
+
 module.exports = {
   adminLogin,
   adminSession,
@@ -1017,4 +1040,6 @@ module.exports = {
   getAddNewCoupon,
   addNewCoupon,
   couponAction,
+  loadReferral,
+  addReferral
 };
