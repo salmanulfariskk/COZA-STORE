@@ -8,13 +8,13 @@
     <% orders.forEach((order)=> { %>
     <div class="d-flex flex-column flex-md-row border p-3 mb-3">
       <div class="col-md-3 col-12 d-flex justify-content-center mb-5">
-        <a href="/productDetails?productId=<%= order.orderedProducts[0]._id %>">
-          <img src="<%= order.orderedProducts[0].images[0] %>" alt="Image" height="180px" width="180px" class="img-fluid">
+        <a href="/productDetails?productId=<%= order.orderedProducts[0]?._id %>">
+          <img src="<%= order.orderedProducts[0]?.images[0] %>" alt="Image" height="180px" width="180px" class="img-fluid">
         </a>
       </div>
       <div class="col-md-6">
         <span class="d-block text-primary h6 text-uppercase">
-          <%= order.orderedProducts[0].productName %>
+          <%= order.orderedProducts[0]?.productName %>
         </span>
         <p>
           Price: ₹<%= order.totalAmount %>,
@@ -105,7 +105,7 @@
         </p>
         <% } else if (currentDate <= sevenDaysAfterDelivery) { %>
         <p class="ml-3">
-          <a href="/return-product?order=<%= order._id %>&product=<%= order.orderedProducts[0]._id %>&category=<%= order.orderedProducts[0].category %>&quantity=<%= order.products.quantity %>&totalPrice=<%= order.products.total %>" class="btn btn-sm btn-outline-primary mb-3">
+          <a href="/return-product?order=<%= order?._id %>&product=<%= order.orderedProducts[0]?._id %>&category=<%= order.orderedProducts[0]?.category %>&quantity=<%= order.products.quantity %>&totalPrice=<%= order.products.total %>" class="btn btn-sm btn-outline-primary mb-3">
             Return
           </a>
         </p>

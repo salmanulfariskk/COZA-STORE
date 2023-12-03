@@ -1007,6 +1007,17 @@ const addReferral = async (req,res) => {
   }
 }
 
+//logout
+
+const logout = async (req,res) => {
+  try {
+      req.session.destroy()
+      res.redirect("/admin/login")
+  }catch (error) {
+      console.log(error.message)
+  }
+}
+
 module.exports = {
   adminLogin,
   adminSession,
@@ -1041,5 +1052,6 @@ module.exports = {
   addNewCoupon,
   couponAction,
   loadReferral,
-  addReferral
+  addReferral,
+  logout
 };

@@ -12,6 +12,8 @@ const Return = require("../models/returnProductModel");
 const Cancel = require("../models/cancelProductModel");
 const razorpay = require("../controllers/utils/razorpayConfig");
 const Coupon = require("../models/couponModel");
+const Admin = require("../models/adminModel");
+const { response } = require("express");
 
 let salt;
 
@@ -142,22 +144,24 @@ const signUp = async (req, res) => {
           });
 
           if (code !== "") {
+            const admin = await Admin.find();
+            console.log(admin);
+            const amount = admin[0].referralAmount
+            console.log(amount);
             const referdUser = await User.findOne({ referralCode: code });
             if (referdUser) {
               const transactionData = {
-                amount: 20,
-                description: `${
-                  referdUser.firstName
-                } user reffered you ${20} credited youre wallet`,
+                amount: (amount * 20) / 100,
+                description: `${referdUser.firstName} user reffered you ${
+                  (amount * 20) / 100
+                } credited your wallet`,
               };
-              referdUser.wallet = 20;
+              referdUser.wallet = (referdUser.wallet + amount);
               const transactionData1 = {
-                amount: 100,
-                description: `${
-                  newUser.firstName
-                } is joined using for your referral code  amount ${20} credited youre wallet  `,
+                amount: amount,
+                description: `${newUser.firstName} is joined using for your referral code  amount ${amount} credited your wallet  `,
               };
-              newUser.wallet = 100;
+              newUser.wallet = (amount * 20) / 100;
               referdUser.walletHistory.push(transactionData1);
               await referdUser.save();
               newUser.walletHistory.push(transactionData);
@@ -1620,6 +1624,18 @@ const applyCoupon = async (req, res) => {
   }
 };
 
+//wallet
+const loadWallet = async (req, res) => {
+  try {
+    const userWallet = await User.findById(req.session.user);
+    const walletAmount = userWallet.wallet;
+    const walletHistory = userWallet.walletHistory;
+    res.render("user/wallet", { isLoggedIn, walletAmount, walletHistory });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 const generateCode = async (req, res) => {
   try {
     const length = 10;
@@ -1699,5 +1715,6 @@ module.exports = {
   loadContact,
   getCoupons,
   applyCoupon,
+  loadWallet,
   generateCode,
 };

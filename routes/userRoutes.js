@@ -105,6 +105,9 @@ router.get("/coupons", auth.isLogin, userControllers.getCoupons)
 
 router.post("/apply-coupon", auth.isLogin, userControllers.applyCoupon)
 
+//wallet
+router.get("/wallet", auth.isLogin, userControllers.loadWallet)
+
 //referral
 router.post("/generateReferralCode",auth.isLogin,userControllers.generateCode)
 

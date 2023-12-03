@@ -54,6 +54,9 @@ router.patch("/coupons/action/:id",auth.adminLogin,adminControllers.couponAction
 router.get("/referral",auth.adminLogin,adminControllers.loadReferral)
 router.post("/addReferral",auth.adminLogin,adminControllers.addReferral)
 
+//logout
+router.get("/logout",auth.adminLogin,adminControllers.logout)
+
 // router.get("/", checkAuth, getDashboard);
 // router.route("/login").get(isLoggedIn, getLogin).post(loginAdmin);
 
