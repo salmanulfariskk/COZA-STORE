@@ -5,57 +5,78 @@ const auth = require("../middlewares/auth");
 
 const ImageMiddleware = require('../middlewares/imageUpload')
 
-//get
-router.get("/login", adminControllers.adminLogin);
-router.get("/dashboard", auth.adminLogin, adminControllers.loadDashboard);
-router.get("/users",auth.adminLogin,adminControllers.adminUsers)
-router.get("/users/unblock-theUser",auth.adminLogin,adminControllers.UnblockTheUser)
-router.get("/users/block-theUser",auth.adminLogin,adminControllers.blockTheUser)
-router.get("/category",auth.adminLogin,adminControllers.loadCategory)
-router.get("/category/add-category",auth.adminLogin,adminControllers.loadAddCategory)
-router.get("/category/edit-category",auth.adminLogin,adminControllers.editCategory)
-router.get("/category/delete-category",auth.adminLogin,adminControllers.deleteCategory);
-router.get("/products",auth.adminLogin,adminControllers.loadProducts)
-router.get("/products/add-product",auth.adminLogin,adminControllers.addProduct)
-router.get("/products/delete-product",auth.adminLogin,adminControllers.deleteProduct)
-router.get("/products/edit-product",auth.adminLogin,adminControllers.loadEditProduct)
+//new edit
+const loginLogoutController = require('../controllers/admin/loginLogoutController')
+const userControllers = require('../controllers/admin/userController')
+const categoryControllers = require('../controllers/admin/categoryController');
+const productControllers = require('../controllers/admin/productController');
+const orderControllers = require('../controllers/admin/orderController');
+const dashboardAndSalesReportControllers = require('../controllers/admin/dashboard&SalesReportController');
+const couponControllers = require('../controllers/admin/couponController');
+const referralControllers = require('../controllers/admin/referralController');
 
 
-//post
-router.post("/login", adminControllers.adminSession,);
-router.post("/category/add-category",auth.adminLogin,adminControllers.AddCategory)
-router.post("/category/edit-category",auth.adminLogin,adminControllers.postEditCategory)
-router.post("/products/add-product",auth.adminLogin,ImageMiddleware.uploadProductImages, ImageMiddleware.resizeProductImages,adminControllers.addProductPost)
-router.post("/products/edit-product",auth.adminLogin,adminControllers.editProduct)
-router.delete("/products/:id/img/delete",auth.adminLogin,adminControllers .destroyProductImage)
-router.patch("/products/:id/img/add",auth.adminLogin,ImageMiddleware.uploadProductImages, ImageMiddleware.resizeProductImages, adminControllers.updateProductImages)
+//login logout
+router.get("/login", loginLogoutController.adminLogin);
+router.post("/login", loginLogoutController.adminSession);
+//logout
+router.get("/logout",auth.adminLogin,loginLogoutController.logout)
+
+//user
+router.get("/users",auth.adminLogin,userControllers.adminUsers)
+router.get("/users/unblock-theUser",auth.adminLogin,userControllers.UnblockTheUser)
+router.get("/users/unblock-theUser",auth.adminLogin,userControllers.UnblockTheUser)
+router.get("/users/block-theUser",auth.adminLogin,userControllers.blockTheUser)
+
+//category
+router.get("/category",auth.adminLogin,categoryControllers.loadCategory)
+router.get("/category/add-category",auth.adminLogin,categoryControllers.loadAddCategory)
+router.post("/category/add-category",auth.adminLogin,categoryControllers.AddCategory)
+router.get("/category/edit-category",auth.adminLogin,categoryControllers.editCategory)
+router.get("/category/delete-category",auth.adminLogin,categoryControllers.deleteCategory);
+router.post("/category/edit-category",auth.adminLogin,categoryControllers.postEditCategory)
+
+//product
+router.get("/products",auth.adminLogin,productControllers.loadProducts)
+router.get("/products/add-product",auth.adminLogin,productControllers.addProduct)
+router.post("/products/add-product",auth.adminLogin,ImageMiddleware.uploadProductImages, ImageMiddleware.resizeProductImages,productControllers.addProductPost)
+router.get("/products/delete-product",auth.adminLogin,productControllers.deleteProduct)
+router.get("/products/edit-product",auth.adminLogin,productControllers.loadEditProduct)
+router.post("/products/edit-product",auth.adminLogin,productControllers.editProduct)
+router.delete("/products/:id/img/delete",auth.adminLogin,productControllers .destroyProductImage)
+router.patch("/products/:id/img/add",auth.adminLogin,ImageMiddleware.uploadProductImages, ImageMiddleware.resizeProductImages, productControllers.updateProductImages)
+
+//order
+router.get('/orders',auth.adminLogin,orderControllers.loadOrder)
+router.get('/order/action-update',auth.adminLogin,orderControllers.updateActionOrder)
+router.get('/order-cancel',auth.adminLogin,orderControllers.updateOrderCancel)
+router.get('/return-requests',auth.adminLogin,orderControllers.getReturnRequests)
+router.post('/return-requests',auth.adminLogin,orderControllers.returnRequestAction)
+router.get('/cancel-requests',auth.adminLogin,orderControllers.getCancelRequests)
+router.post("/cancel-requests", auth.adminLogin, orderControllers.returnCancelAction)
 
 
-//orders
-router.get('/orders',auth.adminLogin,adminControllers.loadOrder)
-router.get('/order/action-update',auth.adminLogin,adminControllers.updateActionOrder)
-router.get('/order-cancel',auth.adminLogin,adminControllers.updateOrderCancel)
-router.get('/return-requests',auth.adminLogin,adminControllers.getReturnRequests)
-router.post('/return-requests',auth.adminLogin,adminControllers.returnRequestAction)
-router.get('/cancel-requests',auth.adminLogin,adminControllers.getCancelRequests)
-router.post("/cancel-requests", auth.adminLogin, adminControllers.returnCancelAction)
-
+//dashBoard
+router.get("/dashboard", auth.adminLogin, dashboardAndSalesReportControllers.loadDashboard);
 //sales report 
-router.get('/sales-report',auth.adminLogin,adminControllers.loadSalesReport)
-router.post('/sales-report',auth.adminLogin,adminControllers.loadSalesReport)
+router.get('/sales-report',auth.adminLogin,dashboardAndSalesReportControllers.loadSalesReport)
+router.post('/sales-report',auth.adminLogin,dashboardAndSalesReportControllers.loadSalesReport)
+
+
+// router.get("/category",auth.adminLogin,adminControllers.loadCategory)
+
 
 //coupons
-router.get("/coupons",auth.adminLogin,adminControllers.loadCoupons)
-router.get("/new-coupon",auth.adminLogin,adminControllers.getAddNewCoupon)
-router.post("/new-coupon",auth.adminLogin,adminControllers.addNewCoupon)
-router.patch("/coupons/action/:id",auth.adminLogin,adminControllers.couponAction)
+router.get("/coupons",auth.adminLogin,couponControllers.loadCoupons)
+router.get("/new-coupon",auth.adminLogin,couponControllers.getAddNewCoupon)
+router.post("/new-coupon",auth.adminLogin,couponControllers.addNewCoupon)
+router.patch("/coupons/action/:id",auth.adminLogin,couponControllers.couponAction)
 
 //referral
-router.get("/referral",auth.adminLogin,adminControllers.loadReferral)
-router.post("/addReferral",auth.adminLogin,adminControllers.addReferral)
+router.get("/referral",auth.adminLogin,referralControllers.loadReferral)
+router.post("/addReferral",auth.adminLogin,referralControllers.addReferral)
 
-//logout
-router.get("/logout",auth.adminLogin,adminControllers.logout)
+
 
 // router.get("/", checkAuth, getDashboard);
 // router.route("/login").get(isLoggedIn, getLogin).post(loginAdmin);
