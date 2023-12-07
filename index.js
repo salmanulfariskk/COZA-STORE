@@ -42,5 +42,5 @@ app.use((req, res, next) => {
 Connection();
 
 app.listen(port, () => {
-  console.log(`server is running`);
+  console.log(`server is running`,port,'hello');
 });
