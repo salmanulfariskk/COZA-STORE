@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const Connection = async () => {
     try {
-        // const URL = "mongodb://127.0.0.1:27017/EcommerceDB";
-        const URL = "mongodb+srv://SalmanulFaris:admin123@brototype.sejqvgt.mongodb.net/EcommerceDB";
+        const URL = "mongodb://127.0.0.1:27017/EcommerceDB";
+        // const URL = "mongodb+srv://SalmanulFaris:admin123@brototype.sejqvgt.mongodb.net/EcommerceDB";
         
 
         mongoose.set('strictQuery', false);
