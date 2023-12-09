@@ -275,21 +275,58 @@
             type: 'POST',
             data: JSON.stringify(data),
             contentType: 'application/json',
-            success: function(response) {
+            success: function (response) {
                 console.log(response.message);
-                if (response.message !== "Stock limit exceeded") {
-                    $('#stockError_' + cartItemId).text("");
-                    $('#totalPrice_' + cartItemId).text(response.totalPrice);
-                    $('#grandTotalPrice').text(response.grandTotal);
-                    $('#quantityElement_' + cartItemId).val(response.quantity);
+
+                if (response.error) {
+                    // Handle specific errors
+                    handleErrors(response.error);
                 } else {
-                    $('#stockError_' + cartItemId).text(response.message);
+                    // Update UI for successful response
+                    updateUI(cartItemId, response);
                 }
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.log(status);
             }
         });
+    }
+
+    function handleErrors(error) {
+        if (error.code === "stock_limit_exceeded") {
+            // Show a message when stock limit is exceeded
+            showErrorAlert(error.message);
+        } else if (error.code === "product_not_found") {
+            // Handle product not found error (if needed)
+            console.error(error.message);
+        } else if (error.code === "internal_server_error") {
+            // Handle internal server error
+            showErrorAlert("Internal Server Error");
+        } else {
+            // Handle other errors
+            console.error("Unexpected error:", error.message);
+        }
+    }
+
+    function showErrorAlert(message) {
+            // Use SweetAlert2 for showing error messages
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: message,
+            });
+    }
+
+    function updateUI(cartItemId, response) {
+        if (response.message !== "Stock limit exceeded") {
+            $('#stockError_' + cartItemId).text("");
+            $('#totalPrice_' + cartItemId).text(response.totalPrice);
+            $('#grandTotalPrice').text(response.grandTotal);
+            $('#quantityElement_' + cartItemId).val(response.quantity);
+        } else {
+            // Show a message when stock limit is exceeded
+            showErrorAlert(response.message);
+        }
     }
 </script>
 

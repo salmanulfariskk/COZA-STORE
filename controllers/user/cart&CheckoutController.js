@@ -86,77 +86,92 @@ const addToCart = async (req, res) => {
 };
 
 const updateCart = async (req, res) => {
-    try {
+  try {
       const currentUser = await User.findById(req.session.user);
-  
+
       const cartItem = currentUser.cart.find((item) =>
-        item.product.equals(new mongoose.Types.ObjectId(req.params.id))
+          item.product.equals(new mongoose.Types.ObjectId(req.params.id))
       );
+
       if (cartItem) {
-        const product = await Product.findById(cartItem.product);
-  
-        if (req.body.type === "increment") {
-          if (cartItem.quantity + 1 > product.quantity) {
-            return res.status(200).json({ message: "Stock limit exeeded" });
+          const product = await Product.findById(cartItem.product);
+
+          if (req.body.type === "increment") {
+              if (cartItem.quantity + 1 > product.quantity) {
+                  return res.status(200).json({
+                      error: {
+                          code: "stock_limit_exceeded",
+                          message: "Stock limit exceeded",
+                      },
+                  });
+              } else {
+                  cartItem.quantity++;
+              }
           } else {
-            cartItem.quantity++;
+              if (cartItem.quantity !== 1) {
+                  cartItem.quantity--;
+              }
           }
-        } else {
-          if (cartItem.quantity !== 1) {
-            cartItem.quantity--;
+
+          let insufficientStock = false;
+          if (product.quantity < cartItem.quantity) {
+              insufficientStock = true;
           }
-        }
-  
-        let insufficientStock = false;
-        if (product.quantity < cartItem.quantity) {
-          insufficientStock = true;
-        }
-  
-        await currentUser.populate("cart.product");
-  
-        for (const item of currentUser.cart) {
-          const currentProduct = await Product.findById(item.product);
-          if (currentProduct.offer > 0) {
-            item.total = item.quantity * currentProduct.offerPrice;
-          } else {
-            item.total = item.quantity * currentProduct.price;
+
+          await currentUser.populate("cart.product");
+
+          for (const item of currentUser.cart) {
+              const currentProduct = await Product.findById(item.product);
+              if (currentProduct.offer > 0) {
+                  item.total = item.quantity * currentProduct.offerPrice;
+              } else {
+                  item.total = item.quantity * currentProduct.price;
+              }
           }
-        }
-  
-        const grandTotal = currentUser.cart.reduce((total, element) => {
-          if (element.product.offer > 0) {
-            return total + element.quantity * element.product.offerPrice;
-          } else {
-            return total + element.quantity * element.product.price;
-          }
-        }, 0);
-  
-        currentUser.totalCartAmount = grandTotal;
-  
-        if (product.offer > 0) {
-          var totalPrice = product.offerPrice * cartItem.quantity;
-        } else {
-          var totalPrice = product.price * cartItem.quantity;
-        }
-  
-        await currentUser.save();
-        return res.status(200).json({
-          message: "Success",
-          quantity: cartItem.quantity,
-          totalPrice,
-          grandTotal,
-          stock: product.quantity,
-          insufficientStock,
-        });
+
+          const grandTotal = currentUser.cart.reduce((total, element) => {
+              if (element.product.offer > 0) {
+                  return total + element.quantity * element.product.offerPrice;
+              } else {
+                  return total + element.quantity * element.product.price;
+              }
+          }, 0);
+
+          currentUser.totalCartAmount = grandTotal;
+
+          const totalPrice =
+              product.offer > 0
+                  ? product.offerPrice * cartItem.quantity
+                  : product.price * cartItem.quantity;
+
+          await currentUser.save();
+          return res.status(200).json({
+              message: "Success",
+              quantity: cartItem.quantity,
+              totalPrice,
+              grandTotal,
+              stock: product.quantity,
+              insufficientStock,
+          });
       } else {
-        return res
-          .status(404)
-          .json({ message: "Product not found in the user's cart." });
+          return res.status(404).json({
+              error: {
+                  code: "product_not_found",
+                  message: "Product not found in the user's cart.",
+              },
+          });
       }
-    } catch (error) {
+  } catch (error) {
       console.log(error.message);
-    }
+      return res.status(500).json({
+          error: {
+              code: "internal_server_error",
+              message: "Internal Server Error",
+          },
+      });
+  }
 };
+
 
 const deleteItemFromCart = async (req, res) => {
     try {
