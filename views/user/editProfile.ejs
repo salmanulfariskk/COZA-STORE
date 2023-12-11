@@ -23,6 +23,10 @@
     .btn-primary, .btn-secondary {
       margin-right: 10px;
     }
+
+    .error {
+      color: red;
+    }
   </style>
 </head>
 <body>
@@ -30,23 +34,27 @@
     <div class="row">
       <div class="col-md-6 offset-md-3">
         <h2>Edit Profile</h2>
-        <form action="/edit-profile" method="post">
+        <form id="editProfileForm" action="/edit-profile" method="post" onsubmit="return validateForm()">
             <input type="hidden" name="id" value="<%= userData._id %>">
           <div class="form-group">
             <label for="firstName">First Name</label>
             <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" value="<%= userData.firstName %>">
+            <span id="firstNameError" class="error"></span>
           </div>
           <div class="form-group">
             <label for="lastName">Last Name</label>
             <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" value="<%= userData.lastName %>">
+            <span id="lastNameError" class="error"></span>
           </div>
           <div class="form-group">
             <label for="email">Email</label>
             <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="<%= userData.email %>" required>
+            <span id="emailError" class="error"></span>
           </div>
           <div class="form-group">
             <label for="phone">Phone</label>
-            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone" value="<%= userData.phone %>"  pattern="[0-9]{10}" required>
+            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone" value="<%= userData.phone %>" pattern="[0-9]{10}" required>
+            <span id="phoneError" class="error"></span>
           </div>
           <button type="submit" class="btn btn-primary">Save Changes</button>
           <a href="/profile" class="btn btn-secondary">Back to Profile</a>
@@ -59,5 +67,51 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    function validateForm() {
+      var firstName = document.getElementById('firstName').value;
+      var lastName = document.getElementById('lastName').value;
+      var email = document.getElementById('email').value;
+      var phone = document.getElementById('phone').value;
+
+      var firstNameError = document.getElementById('firstNameError');
+      var lastNameError = document.getElementById('lastNameError');
+      var emailError = document.getElementById('emailError');
+      var phoneError = document.getElementById('phoneError');
+
+      // Reset error messages
+      firstNameError.innerHTML = '';
+      lastNameError.innerHTML = '';
+      emailError.innerHTML = '';
+      phoneError.innerHTML = '';
+
+      // Validate First Name
+      if (!/^[a-zA-Z]+$/.test(firstName.trim())) {
+        firstNameError.innerHTML = 'First Name should only contain letters.';
+        return false;
+      }
+
+      // Validate Last Name
+      if (!/^[a-zA-Z]+$/.test(lastName.trim())) {
+        lastNameError.innerHTML = 'Last Name should only contain letters.';
+        return false;
+      }
+
+      // Validate Email
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        emailError.innerHTML = 'Invalid email format.';
+        return false;
+      }
+
+      // Validate Phone
+      if (!/^[1-9][0-9]{9}$/.test(phone)) {
+        phoneError.innerHTML = 'Invalid phone number. It must be 10 digits and not start with 0.';
+        return false;
+      }
+
+      return true;
+    }
+  </script>
 </body>
 </html>
