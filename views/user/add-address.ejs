@@ -15,7 +15,7 @@
                     %>
                 </div>
 
-                <form style="margin-top: 15px;" action="/add-address" method="post">
+                <form style="margin-top: 15px;" action="/add-address" method="post"  onsubmit="return validateForm()">
                     <div class="mb-3">
                         <label for="username" class="form-label">Name</label>
                         <input type="text" class="form-control" id="username" placeholder="Your Name" name="name" required>
@@ -58,3 +58,38 @@
     </div>
 </section>
 <%- include('../partials/user/footer') %>
+<script>
+    function validateForm() {
+        var name = document.getElementById("username").value.trim();
+        var phoneNumber = document.getElementById("phoneNumber").value.trim();
+
+        // Validate name
+        if (name === "") {
+            alert("Name cannot be blank");
+            return false;
+        }
+
+        // Validate name not being just spaces
+        if (!name.replace(/\s/g, '').length) {
+            alert("Name cannot be just spaces");
+            return false;
+        }
+
+        // Validate name not being numbers
+        if (!isNaN(name)) {
+            alert("Name cannot be a number");
+            return false;
+        }
+
+        // Validate name not containing symbols
+        if (/[^a-zA-Z0-9\s]/.test(name)) {
+            alert("Name cannot contain symbols");
+            return false;
+        }
+
+        // You can add similar validations for other fields if needed
+
+        return true; // If all validations pass, the form will be submitted
+    }
+</script>
+
