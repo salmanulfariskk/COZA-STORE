@@ -9,7 +9,7 @@ include('../partials/admin/sidepanel') %>
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Edit Category</h4>
-            <form class="forms-sample" method="post" action="">
+            <form class="forms-sample" id="form" method="post" action="">
               <div class="form-group">
                 <label for="exampleInputName1">Category name</label>
                 <input
@@ -24,7 +24,7 @@ include('../partials/admin/sidepanel') %>
                 <input
                   type="number"
                   class="form-control"
-                  id="exampleInputName1"
+                  id="exampleInputOffer"
                   name="offer"
                   placeholder="Offer in percentage"
                   value="<%=category.offer%>"
@@ -42,3 +42,39 @@ include('../partials/admin/sidepanel') %>
     <%- include('../partials/admin/footer') %>
   </div>
 </div>
+
+<script>
+  console.log("Script loaded."); 
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("form");
+
+    form.addEventListener("submit", function (event) {
+      console.log("Form submitted!");
+      // Validate category name
+      const categoryNameInput = document.getElementById("exampleInputName1");
+      const categoryNameValue = categoryNameInput.value.trim();
+      if (categoryNameValue === "") {
+        alert("Please enter a non-empty category name.");
+        event.preventDefault(); // Prevent form submission
+        return;
+      }
+
+      // Check if the category name contains numbers, symbols, or dots
+      if (/[\d.!@#$%^&*()_+={};:'"<>?/|\\`~[\]\-]/.test(categoryNameValue)) {
+        alert("Category name should not contain numbers, symbols, or dots.");
+        event.preventDefault(); // Prevent form submission
+        return;
+      }
+
+      // Validate offer
+      const offerInput = document.getElementById("exampleInputOffer");
+      const offerValue = parseInt(offerInput.value);
+      if (isNaN(offerValue) || offerValue < 0 || offerValue > 100) {
+        alert("Please enter a valid offer between 0 and 100.");
+        event.preventDefault(); // Prevent form submission
+        return;
+      }
+    });
+  });
+</script>
+

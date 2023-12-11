@@ -9,7 +9,7 @@ include('../partials/admin/sidepanel') %>
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Add Category</h4>
-            <form class="forms-sample" method="post" action="/admin/category/add-category">
+            <form class="forms-sample" method="post" action="/admin/category/add-category" onsubmit="return validateForm()">
               <div class="form-group">
                 <label for="exampleInputName1">Category name</label>
                 <input
@@ -23,7 +23,7 @@ include('../partials/admin/sidepanel') %>
                 <input
                   type="text"
                   class="form-control"
-                  id="exampleInputName1"
+                  id="exampleInputOffer"
                   name="offer"
                   placeholder="Offer in Percentage"
                 />
@@ -47,3 +47,29 @@ include('../partials/admin/sidepanel') %>
     <%- include('../partials/admin/footer') %>
   </div>
 </div>
+
+<script>
+  function validateForm() {
+    // Validate Category Name
+    var categoryNameInput = document.getElementById("exampleInputName1");
+    var categoryNameValue = categoryNameInput.value;
+
+    // Check if the category name contains only letters and spaces
+    if (!/^[a-zA-Z\s]+$/.test(categoryNameValue)) {
+      alert("Category name should only contain letters and spaces.");
+      return false;
+    }
+
+    // Validate Offer Input
+    var offerInput = document.getElementById("exampleInputOffer");
+    var offerValue = parseFloat(offerInput.value);
+
+    // Check if the offer value is a valid number between 0 and 100
+    if (isNaN(offerValue) || offerValue < 0 || offerValue > 100) {
+      alert("Offer price must be between 0 and 100 (inclusive) and cannot be a negative value.");
+      return false;
+    }
+
+    return true;
+  }
+</script>

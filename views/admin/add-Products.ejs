@@ -12,6 +12,8 @@ include('../partials/admin/sidepanel') %>
             action="/admin/products/add-product"
             method="post"
             enctype="multipart/form-data"
+            id="productForm"
+
           >
             <div class="form-group">
               <label for="exampleInputName1">Product Name</label>
@@ -76,7 +78,7 @@ include('../partials/admin/sidepanel') %>
                 type="text"
                 name="offer"
                 class="form-control"
-                id="exampleInputPassword4"
+                id="exampleInputPassword5"
                 placeholder="Offer"
                 
               />
@@ -95,7 +97,7 @@ include('../partials/admin/sidepanel') %>
                 />
               </div>
             </div>
-            <button type="submit" class="btn btn-primary mr-2">Submit</button>
+            <button type="button" class="btn btn-primary mr-2" onclick="validateForm()">Submit</button>
             <button class="btn btn-light">Cancel</button>
           </form>
         </div>
@@ -104,3 +106,47 @@ include('../partials/admin/sidepanel') %>
   </div>
 </div>
 <%- include('../partials/admin/footer') %>
+<script>
+  function validateForm() {
+  var productName = document.getElementById('exampleInputName1').value.trim();
+  var quantity = parseInt(document.getElementById('exampleInputEmail3').value);
+  var price = parseFloat(document.getElementById('exampleInputPassword4').value);
+  var offer = parseFloat(document.getElementById('exampleInputPassword5').value);
+  var productNameRegex = /^[a-zA-Z ]+$/; // Allow only letters and spaces
+
+  // Validate Product Name
+  if (!productNameRegex.test(productName)) {
+    alert('Product Name should contain only letters and spaces.');
+    return;
+  }
+
+  // Validate Quantity
+  if (isNaN(quantity) || quantity < 1) {
+    alert('Quantity should be a positive integer starting from 1.');
+    return;
+  }
+
+  // Validate Price
+  if (isNaN(price) || price <= 0) {
+    alert('Price should be a positive number.');
+    return;
+  }
+
+  // Validate Offer
+  if (isNaN(offer) || offer < 0 || offer > 100) {
+    alert('Offer should be between 0 and 100 and not a negative value.');
+    return;
+  }
+
+  // Validate Image
+  var fileInput = document.getElementById('basic-default-name images');
+  if (!fileInput.files.length) {
+    alert('Please select at least one image.');
+    return;
+  }
+
+  // If all validations pass, submit the form
+  document.getElementById('productForm').submit();
+}
+
+</script>

@@ -137,3 +137,55 @@ include('../partials/admin/sidepanel') %>
   </div>
 </div>
 <%- include('../partials/admin/footer') %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('.forms-sample');
+
+    form.addEventListener('submit', function (event) {
+      // Product Name validation
+      const productNameInput = document.querySelector('input[name="productName"]');
+      const productNameValue = productNameInput.value.trim();
+
+      if (!productNameValue) {
+        alert('Product Name must be filled.');
+        event.preventDefault();
+        return;
+      }
+
+      // Check if the product name contains symbols or numbers
+      const productNameRegex = /^[a-zA-Z\s]+$/; // Only allow letters and spaces
+      if (!productNameRegex.test(productNameValue)) {
+        alert('Product Name should only contain letters and spaces.');
+        event.preventDefault();
+        return;
+      }
+
+      // Quantity validation
+      const quantityInput = document.querySelector('input[name="quantity"]');
+      if (quantityInput.value <= 0 || quantityInput.value % 1 !== 0) {
+        alert('Quantity should be a positive integer greater than 0.');
+        event.preventDefault();
+        return;
+      }
+
+      // Price validation
+      const priceInput = document.querySelector('input[name="price"]');
+      if (priceInput.value <= 0) {
+        alert('Price should be a positive value greater than 0.');
+        event.preventDefault();
+        return;
+      }
+
+      // Offer validation
+      const offerInput = document.querySelector('input[name="offer"]');
+      const offerValue = parseFloat(offerInput.value);
+      if (isNaN(offerValue) || offerValue < 0 || offerValue > 100) {
+        alert('Offer should be a number between 0 and 100.');
+        event.preventDefault();
+        return;
+      }
+    });
+  });
+</script>
+
