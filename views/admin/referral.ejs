@@ -10,12 +10,13 @@
                 </div>
                 <div class="card-body">
                     <!-- Start of the form -->
-                    <form action="/admin/addReferral" method="post">
+                    <form id="referralForm" action="/admin/addReferral" method="post">
                         <div class="form-group">
-                            <strong><label for="referralAmount">Current Referral Amount: ₹ <%= admin.referralAmount %> </label></strong> 
+                            <strong><label for="referralAmount">Current Referral Amount: ₹ <%= admin.referralAmount %> </label></strong>
                             <input type="number" class="form-control" id="referralAmount" name="referralAmount" placeholder="Referral Amount" required>
+                            <small id="referralAmountError" style="color: red;"></small>
                         </div>
-                        <button type="submit" class="btn btn-success">Update Amount</button>
+                        <button type="button" class="btn btn-success" onclick="validateForm()">Update Amount</button>
                     </form>
                     <!-- End of the form -->
                 </div>
@@ -26,3 +27,15 @@
 
 <%- include('../partials/admin/footer') %>
 
+<script>
+    function validateForm() {
+        var referralAmount = document.getElementById("referralAmount").value;
+
+        if (referralAmount <= 0) {
+            document.getElementById("referralAmountError").innerHTML = "Referral Amount must be greater than 0.";
+        } else {
+            document.getElementById("referralAmountError").innerHTML = ""; // Clear the error message
+            document.getElementById("referralForm").submit(); // Submit the form if validation passes
+        }
+    }
+</script>
